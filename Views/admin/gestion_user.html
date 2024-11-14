@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Utilisateurs</title>
+    <link rel="stylesheet" href="style-users.css">
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+    
+    .user-management {
+        background-color: #fff;
+        padding: 30px; /* Augmentation du padding */
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        width: 600px; /* Largeur augmentée */
+        text-align: center;
+    }
+    
+    h2 {
+        margin-bottom: 30px; /* Plus d'espace sous le titre */
+        color: #333;
+        font-size: 24px; /* Augmentation de la taille de la police */
+    }
+    
+    input[type="text"] {
+        width: 100%;
+        padding: 15px; /* Agrandir la zone de saisie */
+        margin-bottom: 30px; /* Plus d'espace sous la zone de recherche */
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 18px; /* Agrandir la police de la zone de recherche */
+    }
+    
+    ul {
+        list-style: none;
+    }
+    
+    li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px; /* Plus d'espace entre les utilisateurs */
+    }
+    
+    .btn-group {
+        display: flex;
+        gap: 15px; /* Espacement plus grand entre les boutons */
+    }
+    
+    button {
+        padding: 12px 20px; /* Boutons plus grands */
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px; /* Police plus grande pour les boutons */
+        transition: all 0.3s ease;
+    }
+    
+    .block-btn {
+        background-color: #ff4d4d;
+        color: white;
+    }
+    
+    .unblock-btn {
+        background-color: #28a745;
+        color: white;
+    }
+    
+    .delete-btn {
+        background-color: #6c757d;
+        color: white;
+    }
+    
+    button:hover {
+        opacity: 0.8;
+    }    
+</style>
+<body>
+    <div id="navbar-container"></div>
+    <div class="container">
+        <div class="user-management">
+            <h2>Gestion des Utilisateurs</h2>
+            
+            <!-- Zone de recherche -->
+            <input type="text" id="searchInput" placeholder="Rechercher un utilisateur..." onkeyup="searchUser()">
+            
+            <ul id="userList">
+                <li>Utilisateur 1
+                    <div class="btn-group">
+                        <button class="block-btn" onclick="blockUser()">Bloquer</button>
+                        <button class="unblock-btn" onclick="unblockUser()">Débloquer</button>
+                        <button class="delete-btn" onclick="deleteUser()">Supprimer</button>
+                    </div>
+                </li>
+                <li>Utilisateur 2
+                    <div class="btn-group">
+                        <button class="block-btn" onclick="blockUser()">Bloquer</button>
+                        <button class="unblock-btn" onclick="unblockUser()">Débloquer</button>
+                        <button class="delete-btn" onclick="deleteUser()">Supprimer</button>
+                    </div>
+                </li>
+                <li>Utilisateur 3
+                    <div class="btn-group">
+                        <button class="block-btn" onclick="blockUser()">Bloquer</button>
+                        <button class="unblock-btn" onclick="unblockUser()">Débloquer</button>
+                        <button class="delete-btn" onclick="deleteUser()">Supprimer</button>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="script-users.js"></script>
+</body>
+<script>
+    function blockUser() {
+        alert("Utilisateur bloqué !");
+    }
+    
+    function unblockUser() {
+        alert("Utilisateur débloqué !");
+    }
+    
+    function deleteUser() {
+        alert("Utilisateur supprimé !");
+    }
+    
+    function searchUser() {
+        // Récupère la valeur entrée dans le champ de recherche
+        let input = document.getElementById('searchInput').value.toLowerCase();
+        
+        // Récupère tous les utilisateurs dans la liste
+        let users = document.querySelectorAll('#userList li');
+        
+        // Parcourt la liste des utilisateurs et masque ceux qui ne correspondent pas
+        users.forEach(function(user) {
+            if (user.innerText.toLowerCase().includes(input)) {
+                user.style.display = '';
+            } else {
+                user.style.display = 'none';
+            }
+        });
+    }    
+</script>
+<script>
+    fetch('navbar_user.html')
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById('navbar-container').innerHTML = html;
+      })
+      .catch(err => {
+        console.error('Erreur du chargement de la navbar:', err);
+      });
+  </script>
+</html>
