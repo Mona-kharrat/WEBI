@@ -10,7 +10,9 @@ class AuthController {
     }
 
     public function register() {
-        // Vérifiez si le formulaire a été soumis
+        // Initialisation du tableau des erreurs
+        $errors = [];
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Récupération des données du formulaire
             $username = trim($_POST['username']);
@@ -20,35 +22,104 @@ class AuthController {
 
             // Validation des mots de passe
             if ($password !== $confirmPassword) {
-                return $this->renderError("Les mots de passe ne correspondent pas !");
+                $errors['password'] = "Les mots de passe ne correspondent pas !";
             }
 
             // Vérification si l'utilisateur existe déjà
             if ($this->userModel->userExists($email)) {
-                // Afficher un message d'erreur
-                return $this->renderError("L'email existe déjà !");
+                $errors['email'] = "L'email existe déjà !";
             }
 
-            // Insertion de l'utilisateur
-            if ($this->userModel->insertUser($username, $email, $password)) {
-                // Rediriger vers une page de succès ou afficher un message de succès
-                header("Location: ../Views/index.php");
-                exit();
-            } else {
-                // Afficher un message d'erreur en cas d'échec
-                return $this->renderError("Une erreur s'est produite lors de la création du compte.");
+            // S'il n'y a pas d'erreurs, procédez à l'insertion
+            if (empty($errors)) {
+                if ($this->userModel->insertUser($username, $email, $password)) {
+                    // Enregistrez les informations de l'utilisateur dans la session après l'inscription
+                    session_start();
+                    $_SESSION['user'] = [
+                        'username' => $username,
+                        'email' => $email,
+                        'id' => $this->userModel->getUserIdByEmail($email) // Assurez-vous d'avoir une méthode pour récupérer l'ID
+                    ];
+
+                    // Redirige vers la page de succès
+                    header("Location: ../Views/user/ShowMyEvents.php");
+                    exit();
+                } else {
+                    $errors['general'] = "Une erreur s'est produite lors de la création du compte.";
+                }
             }
         }
+
+        // Enregistrez les erreurs et les valeurs dans une session
+        session_start();
+        $_SESSION['errors'] = $errors;
+        $_SESSION['formData'] = [
+            'username' => $username ?? '',
+            'email' => $email ?? ''
+        ];
+
+        // Redirigez vers la page d'inscription pour afficher les erreurs
+        header("Location: ../Views/authentification/inscription.php");
+        exit();
     }
 
-    private function renderError($message) {
-        // Cette méthode peut afficher un message d'erreur ou rediriger vers une page d'erreur
-        // Vous pouvez personnaliser cette fonction selon vos besoins
-        echo '<div class="alert alert-danger">' . htmlspecialchars($message) . '</div>';
+    public function login() {
+        // Initialisation du tableau des erreurs
+        $errors = [];
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Récupération des données du formulaire
+            $email = trim($_POST['email']);
+            $password = trim($_POST['password']);
+
+            // Validation des champs
+            if (empty($email)) {
+                $errors['email'] = "Veuillez entrer votre adresse e-mail.";
+            }
+            if (empty($password)) {
+                $errors['password'] = "Veuillez entrer votre mot de passe.";
+            }
+
+            // Si aucun champ n'est vide, on vérifie l'utilisateur
+            if (empty($errors)) {
+                $user = $this->userModel->getUserByEmail($email);
+
+                // Vérification de l'utilisateur et du mot de passe
+                if ($user && password_verify($password, $user['password'])) {
+                    // Démarrer la session et enregistrer l'utilisateur dans la session
+                    session_start();
+                    $_SESSION['user'] = [
+                        'id' => $user['id'],
+                        'username' => $user['username'],
+                        'email' => $user['email']
+                    ];
+
+                    // Rediriger vers la page de l'utilisateur ou la page des événements
+                    header("Location: ../Views/user/ShowMyEvents.php");
+                    exit();
+                } else {
+                    $errors['general'] = "Identifiants incorrects. Veuillez vérifier votre e-mail et votre mot de passe.";
+                }
+            }
+        }
+
+        // Enregistrez les erreurs et redirigez
+        session_start();
+        $_SESSION['errors'] = $errors;
+        $_SESSION['formData'] = ['email' => $email ?? ''];
+
+        // Redirection vers la page de connexion pour afficher les erreurs
+        header("Location: ../Views/authentification/Authentification.php");
+        exit();
     }
 }
 
-// Traitement de la requête
+// Déterminez l'action à effectuer
 $authController = new AuthController();
-$authController->register();
+if (isset($_GET['action']) && $_GET['action'] === 'login') {
+    $authController->login();
+} else {
+    $authController->register();
+}
+
 ?>
