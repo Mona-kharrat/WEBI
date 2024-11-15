@@ -2,12 +2,15 @@
 session_start();
 
 // Récupération des erreurs et des données de formulaire
+// Vérifier si l'ID de l'utilisateur est défini dans la session
+$personneId = $_SESSION['user_id'] ?? null;
 $errors = $_SESSION['errors'] ?? [];
 $formData = $_SESSION['formData'] ?? [];
 
 // Nettoyage des erreurs et données de formulaire après utilisation
 unset($_SESSION['errors']);
 unset($_SESSION['formData']);
+
 ?>
 
 <!DOCTYPE html>
@@ -44,7 +47,7 @@ unset($_SESSION['formData']);
                 </div>
             <?php endif; ?>
             
-            <form id="eventForm" action="\webi\Controllers\EventController.php" method="POST" enctype="multipart/form-data">
+            <form id="eventForm" action="/webi/Controllers/EventController.php?action=add" method="POST" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label for="title" class="form-label">Titre de l'évènement</label>
                     <input type="text" class="form-control" id="title" name="title" value="<?= htmlspecialchars($formData['title'] ?? '') ?>" placeholder="Entrez le titre de l'évènement" required>
@@ -92,5 +95,13 @@ unset($_SESSION['formData']);
             </div>
         </div>
     </div>
+    <script>
+        // Si l'ID de l'utilisateur existe dans la session, afficher l'ID dans la console
+        <?php if ($personneId): ?>
+            console.log("ID de l'utilisateur connecté : <?php echo $personneId; ?>");
+        <?php else: ?>
+            console.log("Aucun ID utilisateur trouvé dans la session.");
+        <?php endif; ?>
+    </script>
 </body>
 </html>

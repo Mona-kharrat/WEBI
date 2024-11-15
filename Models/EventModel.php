@@ -1,5 +1,4 @@
 <?php
-// EventModel.php
 require_once '../database.php';
 
 class EventModel {
@@ -8,15 +7,8 @@ class EventModel {
     public function __construct() {
         $this->db = new Database();  // Connexion à la base de données
     }
-    public function addEvent($title, $description, $date, $time, $location, $category, $image) {
-        // Vérifier si l'ID de l'utilisateur est disponible dans la session
-        if (isset($_SESSION['user_id'])) {
-            $user_id = $_SESSION['user_id'];  // Récupérer l'ID de l'utilisateur de la session
-        } else {
-            // Si l'utilisateur n'est pas connecté, renvoyer false ou une erreur
-            return false;
-        }
 
+    public function addEvent($title, $description, $date, $time, $location, $category, $image, $user_id) {
         // Préparer la requête d'insertion avec le champ user_id
         $query = "INSERT INTO events (title, description, date, time, location, category, image, user_id) 
                   VALUES (:title, :description, :date, :time, :location, :category, :image, :user_id)";
@@ -41,5 +33,15 @@ class EventModel {
             return false;  // L'ajout de l'événement a échoué
         }
     }
+    public function getUserEvents($user_id) {
+        $query = "SELECT * FROM events WHERE user_id = :user_id";
+        $stmt = $this->db->getConnection()->prepare($query);
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
+    
 }
 ?>

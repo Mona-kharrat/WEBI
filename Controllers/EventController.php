@@ -56,6 +56,7 @@ class EventController {
                     $errors[] = "L'image ne doit pas dépasser 5 Mo.";
                 }
 
+                // Si aucune erreur, déplacer l'image
                 if (empty($errors)) {
                     $image = 'uploads/' . basename($_FILES['image']['name']);
                     move_uploaded_file($_FILES['image']['tmp_name'], '../' . $image);
@@ -65,21 +66,21 @@ class EventController {
             }
 
             // Vérification de l'existence de l'ID de l'utilisateur dans la session
-            if (!isset($_SESSION['user_id'])) {
+            if (!isset($_SESSION['user']['id'])) {
                 $errors[] = "Vous devez être connecté pour ajouter un événement.";
             }
 
             // Si pas d'erreurs, ajout de l'événement
             if (empty($errors)) {
                 // Récupérer l'ID de l'utilisateur à partir de la session
-                $user_id = $_SESSION['user_id'];
+                $user_id = $_SESSION['user']['id'];
 
                 // Ajouter l'événement en passant l'ID de l'utilisateur
                 $eventAdded = $this->eventModel->addEvent($title, $description, $date, $time, $location, $category, $image, $user_id);
 
                 if ($eventAdded) {
                     // Rediriger vers une page de succès ou la liste des événements
-                    header("Location: \webi\Views\user\ShowMyEvents.php");
+                    header("Location: /webi/Views/user/ShowMyEvents.php");
                     exit();
                 } else {
                     $errors[] = "Une erreur est survenue lors de l'ajout de l'événement.";
@@ -92,12 +93,30 @@ class EventController {
         $_SESSION['formData'] = $_POST;
         
         // Redirection vers le formulaire avec les erreurs et données
-        header("Location:\webi\Views\user\AddEvent.php");
+        header("Location: /webi/Views/user/AddEvent.php");
         exit();
+
+    }
+
+     // Méthode pour afficher les événements de l'utilisateur connecté
+    public function showUserEvents() {
+        if (!isset($_SESSION['user']['id'])) {
+            header("Location: /webi/Views/login.php");
+            exit();
+        }
+
+        $user_id = $_SESSION['user']['id'];
+        $events = $this->eventModel->getUserEvents($user_id);
+        include '../Views/user/ShowMyEvents.php';
     }
 }
 
-// Traitement de la demande
-$eventController = new EventController();
-$eventController->addEvent();
+// Vérification de l'action demandée
+if (isset($_GET['action']) && $_GET['action'] == 'show') {
+    $eventController = new EventController();
+    $eventController->showUserEvents();
+} elseif (isset($_POST['action']) && $_POST['action'] == 'add') {
+    $eventController = new EventController();
+    $eventController->addEvent();
+}
 ?>
