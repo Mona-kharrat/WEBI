@@ -11,7 +11,7 @@
     <div class="container-fluid vh-100">
         <div class="row h-100">
             <div class="col-md-6 d-none d-md-block p-0">
-                <img src="../images/Mobile login-pana.png" alt="Image Inscription" class="img-fluid h-100 w-100" style="object-fit: cover;">
+                <img src="../../images/Mobile login-pana.png" alt="Image Inscription" class="img-fluid h-100 w-100" style="object-fit: cover;">
             </div>
             <div class="col-md-6 d-flex justify-content-center align-items-center">
                 <div class="card p-4 shadow" style="width: 80%; max-width: 400px;">

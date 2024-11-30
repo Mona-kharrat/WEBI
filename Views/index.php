@@ -17,7 +17,7 @@
     
     .jumbotron {
       height: 95vh; 
-      background: url('images/hero2.png') no-repeat center center;
+      background: url('../images/hero2.png') no-repeat center center;
       background-size: cover;
       color: white;
       display: flex;
@@ -78,7 +78,7 @@
   <h2 class="mb-4 font-weight-bold" style="margin-top: 80px;">Bienvenue sur <span style="color: #007bff;">WEBI !</span></h2>
   <div class="row align-items-center">
       <div class="col-md-6">
-          <img src="images/organize_events.jpg" class="img-fluid" style="max-width: 100%; height: auto;">
+          <img src="../images/organize_events.jpg" class="img-fluid" style="max-width: 100%; height: auto;">
       </div>
       <div class="col-md-6">
           <p class="lead">
@@ -105,7 +105,7 @@
   <div class="row">
     <div class="col-md-4">
       <div class="card service-card">
-        <img src="images/planification.jpg" class="card-img-top" alt="Planification">
+        <img src="../images/planification.jpg" class="card-img-top" alt="Planification">
         <div class="card-body">
           <h5 class="card-title">Planification d'Événements</h5>
           <p class="card-text">Planifiez facilement vos conférences, ateliers et webinaires grâce à notre plateforme intuitive.</p>
@@ -114,7 +114,7 @@
     </div>
     <div class="col-md-4">
       <div class="card service-card">
-        <img src="images/inscri.jpg" class="card-img-top" alt="Inscription">
+        <img src="../images/inscri.jpg" class="card-img-top" alt="Inscription">
         <div class="card-body">
           <h5 class="card-title">Inscription aux Événements</h5>
           <p class="card-text">Inscrivez-vous rapidement aux événements qui vous intéressent et recevez des rappels automatiques.</p>
@@ -123,7 +123,7 @@
     </div>
     <div class="col-md-4">
       <div class="card service-card">
-        <img src="images\gestion.jpg" class="card-img-top" alt="Gestion">
+        <img src="../images/gestion.jpg" class="card-img-top" alt="Gestion">
         <div class="card-body">
           <h5 class="card-title">Gestion des événements</h5>
           <p class="card-text">Les administrateurs peuvent gérer les utilisateurs, suivre les inscriptions et optimiser les événements.</p>

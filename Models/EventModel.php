@@ -41,6 +41,16 @@ class EventModel {
 
         return $stmt->fetchAll();
     }
+   // EventModel.php
+public function getAllEvents() {
+    // La requête pour récupérer tous les événements
+    $query = "SELECT * FROM events";
+    $stmt = $this->db->getConnection()->prepare($query);
+    $stmt->execute();
+    
+    // Retourner tous les résultats sous forme de tableau
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
     
 }

@@ -98,17 +98,43 @@ class EventController {
 
     }
 
-     // Méthode pour afficher les événements de l'utilisateur connecté
-    public function showUserEvents() {
-        if (!isset($_SESSION['user']['id'])) {
-            header("Location: /webi/Views/login.php");
-            exit();
-        }
-
-        $user_id = $_SESSION['user']['id'];
-        $events = $this->eventModel->getUserEvents($user_id);
-        include '../Views/user/ShowMyEvents.php';
+   // Méthode pour afficher les événements de l'utilisateur connecté
+public function showUserEvents() {
+    if (!isset($_SESSION['user']['id'])) {
+        header("Location: /webi/Views/login.php");
+        exit();
     }
+
+    $user_id = $_SESSION['user']['id'];
+    $events = $this->eventModel->getUserEvents($user_id);
+    
+    // Si des événements sont récupérés, on les passe à la vue
+    if (!empty($events)) {
+        $_SESSION['events'] = $events;  // Stocke les événements dans la session pour la vue
+    } else {
+        $_SESSION['events'] = [];  // Aucun événement trouvé
+    }
+    
+    // Inclure la vue
+    include '../Views/user/ShowMyEvents.php';
+}
+
+
+// EventController.php
+public function showAllEvents() {
+    // Récupérer tous les événements
+    $events = $this->eventModel->getAllEvents();
+    
+    // Vérification si des événements sont trouvés
+    if (empty($events)) {
+        echo "Aucun événement trouvé.";
+    } else {
+        // Inclure la vue et passer les événements
+        include '../Views/user/ShowAllEvents.php';
+    }
+}
+
+
 }
 
 // Vérification de l'action demandée
