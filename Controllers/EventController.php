@@ -3,146 +3,109 @@ session_start();
 
 require_once '../Models/EventModel.php';
 
-class EventController {
-    private $eventModel;
+class EventController
+{
+    // Méthode pour ajouter un événement
+    public function add()
+    {
+        // Vérification de la session utilisateur
+        if (!isset($_SESSION['user']['id'])) {
+            echo "Session user_id non définie. Veuillez vous connecter.";
+            header("Location: ../Views/authentification/Authentification.php");
+            exit();
+        }
 
-    public function __construct() {
-        $this->eventModel = new EventModel();
-    }
-
-    // Fonction pour traiter l'ajout d'un événement
-    public function addEvent() {
-        // Initialisation des erreurs
-        $errors = [];
-
+        // Vérification du formulaire
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Récupération des données du formulaire
-            $title = trim($_POST['title']);
-            $description = trim($_POST['description']);
-            $date = trim($_POST['date']);
-            $time = trim($_POST['time']);
-            $location = trim($_POST['location']);
-            $category = trim($_POST['category']);
-            
-            // Vérification que les champs obligatoires sont remplis
-            if (empty($title)) {
-                $errors[] = "Le titre est requis.";
-            }
-            if (empty($description)) {
-                $errors[] = "La description est requise.";
-            }
-            if (empty($date)) {
-                $errors[] = "La date est requise.";
-            }
-            if (empty($time)) {
-                $errors[] = "L'heure est requise.";
-            }
-            if (empty($location)) {
-                $errors[] = "Le lieu est requis.";
-            }
+            $title = $_POST['title'] ?? '';
+            $description = $_POST['description'] ?? '';
+            $date = $_POST['date'] ?? '';
+            $time = $_POST['time'] ?? '';
+            $location = $_POST['location'] ?? '';
+            $category = $_POST['category'] ?? '';
+            $image = $_FILES['image'] ?? null;
 
-            // Gestion de l'image
-            $image = null;
-            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-                // Vérification du type de fichier
-                $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-                $fileType = mime_content_type($_FILES['image']['tmp_name']);
-                if (!in_array($fileType, $allowedTypes)) {
-                    $errors[] = "Le fichier doit être une image JPEG, PNG ou GIF.";
-                }
+            // Validation du formulaire
+            $errors = $this->validateForm($title, $description, $date, $time, $location, $category);
 
-                // Vérification de la taille du fichier (par exemple, 5Mo max)
-                if ($_FILES['image']['size'] > 5 * 1024 * 1024) {
-                    $errors[] = "L'image ne doit pas dépasser 5 Mo.";
-                }
-
-                // Si aucune erreur, déplacer l'image
-                if (empty($errors)) {
-                    $image = 'uploads/' . basename($_FILES['image']['name']);
-                    move_uploaded_file($_FILES['image']['tmp_name'], '../' . $image);
-                }
-            } elseif (empty($_FILES['image']['name'])) {
-                $errors[] = "Veuillez télécharger une image.";
-            }
-
-            // Vérification de l'existence de l'ID de l'utilisateur dans la session
-            if (!isset($_SESSION['user']['id'])) {
-                $errors[] = "Vous devez être connecté pour ajouter un événement.";
-            }
-
-            // Si pas d'erreurs, ajout de l'événement
+            // Si pas d'erreur, création de l'événement
             if (empty($errors)) {
-                // Récupérer l'ID de l'utilisateur à partir de la session
-                $user_id = $_SESSION['user']['id'];
-
-                // Ajouter l'événement en passant l'ID de l'utilisateur
-                $eventAdded = $this->eventModel->addEvent($title, $description, $date, $time, $location, $category, $image, $user_id);
-
-                if ($eventAdded) {
-                    // Rediriger vers une page de succès ou la liste des événements
-                    header("Location: /webi/Views/user/ShowMyEvents.php");
+                try {
+                    $eventModel = new EventModel();
+                    $eventModel->createEvent($title, $description, $date, $time, $location, $category, $image);
+                    header('Location: ../Views/user/ShowMyEvents.php');
                     exit();
-                } else {
-                    $errors[] = "Une erreur est survenue lors de l'ajout de l'événement.";
+                } catch (Exception $e) {
+                    echo '<p style="color: red;">Erreur : ' . htmlspecialchars($e->getMessage()) . '</p>';
+                }
+            } else {
+                // Affichage des erreurs
+                foreach ($errors as $error) {
+                    echo '<p style="color: red;">' . htmlspecialchars($error) . '</p>';
                 }
             }
         }
-
-        // Enregistrement des erreurs et données de formulaire dans la session
-        $_SESSION['errors'] = $errors;
-        $_SESSION['formData'] = $_POST;
-        
-        // Redirection vers le formulaire avec les erreurs et données
-        header("Location: /webi/Views/user/AddEvent.php");
-        exit();
-
     }
 
-   // Méthode pour afficher les événements de l'utilisateur connecté
-public function showUserEvents() {
-    if (!isset($_SESSION['user']['id'])) {
-        header("Location: /webi/Views/login.php");
-        exit();
+    // Validation des champs du formulaire
+    private function validateForm($title, $description, $date, $time, $location, $category)
+    {
+        $errors = [];
+
+        if (empty($title)) $errors[] = "Le titre est requis.";
+        if (empty($description)) $errors[] = "La description est requise.";
+        if (empty($date)) $errors[] = "La date est requise.";
+        if (empty($time)) $errors[] = "L'heure est requise.";
+        if (empty($location)) $errors[] = "Le lieu est requis.";
+        if (empty($category)) $errors[] = "La catégorie est requise.";
+
+        return $errors;
     }
 
-    $user_id = $_SESSION['user']['id'];
-    $events = $this->eventModel->getUserEvents($user_id);
-    
-    // Si des événements sont récupérés, on les passe à la vue
-    if (!empty($events)) {
-        $_SESSION['events'] = $events;  // Stocke les événements dans la session pour la vue
-    } else {
-        $_SESSION['events'] = [];  // Aucun événement trouvé
+    // Méthode pour afficher les événements d'un utilisateur
+    public function showMyEvents()
+    {
+        // Vérification de la session utilisateur
+        if (!isset($_SESSION['user']['id'])) {
+            echo "Veuillez vous connecter pour afficher vos événements.";
+            header("Location: ../Views/authentification/Authentification.php");
+            exit();
+        }
+
+        // Si la session est correcte, afficher l'ID de l'utilisateur
+        $userId = $_SESSION['user']['id'];
+        echo "Recherche des événements pour l'utilisateur avec ID: " . $userId . "<br>";
+
+        // Instanciation du modèle et récupération des événements
+        $eventModel = new EventModel();
+        $events = $eventModel->getUserEvents($userId);
+
+        // Vérification des événements récupérés
+        if ($events) {
+            $_SESSION['events'] = $events;
+        } else {
+            echo "Aucun événement trouvé pour cet utilisateur.";
+        }
+
+        // Redirection vers la vue pour afficher les événements
+        require_once '../Views/user/ShowMyEvents.php';
     }
-    
-    // Inclure la vue
-    include '../Views/user/ShowMyEvents.php';
 }
 
-
-// EventController.php
-public function showAllEvents() {
-    // Récupérer tous les événements
-    $events = $this->eventModel->getAllEvents();
-    
-    // Vérification si des événements sont trouvés
-    if (empty($events)) {
-        echo "Aucun événement trouvé.";
-    } else {
-        // Inclure la vue et passer les événements
-        include '../Views/user/ShowAllEvents.php';
+// Gestion des actions via les paramètres GET
+if (isset($_GET['action'])) {
+    $controller = new EventController();
+    switch ($_GET['action']) {
+        case 'add':
+            $controller->add();
+            break;
+        case 'showMyEvents':
+            $controller->showMyEvents();
+            break;
+        default:
+            // Si l'action n'est pas définie ou est incorrecte, redirigez ou affichez un message d'erreur.
+            echo "Action non valide.";
+            break;
     }
-}
-
-
-}
-
-// Vérification de l'action demandée
-if (isset($_GET['action']) && $_GET['action'] == 'show') {
-    $eventController = new EventController();
-    $eventController->showUserEvents();
-} elseif (isset($_POST['action']) && $_POST['action'] == 'add') {
-    $eventController = new EventController();
-    $eventController->addEvent();
 }
 ?>

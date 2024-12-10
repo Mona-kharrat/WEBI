@@ -1,13 +1,16 @@
 <?php
 session_start();
 
+// Vérifier si les événements existent dans la session
+$events = isset($_SESSION['events']) ? $_SESSION['events'] : [];
+
+// Déboguer: Afficher le contenu de $events
+var_dump($events);  // Vérifie les événements avant de les afficher
+
 if (!isset($_SESSION['user']['id'])) {
-    header("Location: /webi/Views/login.php");
+    header("Location: /webi/Views/Authentification.php");
     exit();
 }
-
-echo "ID utilisateur connecté : " . $_SESSION['user']['id'];
-$events = $_SESSION['events'] ?? [];
 ?>
 
 <!DOCTYPE html>
@@ -17,9 +20,9 @@ $events = $_SESSION['events'] ?? [];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mes événements inscrits</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    
 </head>
 <body>
+    <a href="AddEvent.php">Ajouter un événement</a>
     <div class="container">
         <div class="card w-75 mx-auto">
             <div class="card-body">

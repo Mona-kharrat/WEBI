@@ -19,13 +19,12 @@
 
                     <?php
                     session_start();
-                    // Récupérer les erreurs et les données de formulaire depuis la session
                     $errors = $_SESSION['errors'] ?? [];
                     $formData = $_SESSION['formData'] ?? [];
-                    session_unset(); // Nettoyer la session après utilisation
+                    
                     ?>
 
-                    <form id="signupForm" method="POST" action="../Controllers/personneController.php?action=register">
+                    <form id="signupForm" method="POST" action="../../Controllers/personneController.php?action=register">
 
                         <?php if (!empty($errors['general'])) : ?>
                             <div class="alert alert-danger"><?php echo htmlspecialchars($errors['general']); ?></div>

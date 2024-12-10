@@ -1,57 +1,59 @@
 <?php
 require_once '../database.php';
 
-class EventModel {
+class EventModel
+{
     private $db;
 
-    public function __construct() {
-        $this->db = new Database();  // Connexion à la base de données
+    public function __construct()
+    {
+        $database = new Database();
+        $this->db = $database->getConnection();
     }
 
-    public function addEvent($title, $description, $date, $time, $location, $category, $image, $user_id) {
-        // Préparer la requête d'insertion avec le champ user_id
+    public function createEvent($title, $description, $date, $time, $location, $category, $image)
+    {
+        if (!isset($_SESSION['user']['id'])) {
+            throw new Exception("Utilisateur non connecté.");
+        }
+
+        $userId = $_SESSION['user']['id'];
+        $imagePath = $this->handleImageUpload($image);
+
         $query = "INSERT INTO events (title, description, date, time, location, category, image, user_id) 
                   VALUES (:title, :description, :date, :time, :location, :category, :image, :user_id)";
         
-        // Préparer la requête à l'aide de PDO
-        $stmt = $this->db->getConnection()->prepare($query);
+        $stmt = $this->db->prepare($query);
+        $stmt->execute([
+            ':title' => $title,
+            ':description' => $description,
+            ':date' => $date,
+            ':time' => $time,
+            ':location' => $location,
+            ':category' => $category,
+            ':image' => $imagePath,
+            ':user_id' => $userId
+        ]);
+    }
 
-        // Lier les paramètres
-        $stmt->bindParam(':title', $title);
-        $stmt->bindParam(':description', $description);
-        $stmt->bindParam(':date', $date);
-        $stmt->bindParam(':time', $time);
-        $stmt->bindParam(':location', $location);
-        $stmt->bindParam(':category', $category);
-        $stmt->bindParam(':image', $image);
-        $stmt->bindParam(':user_id', $user_id);  // Lier l'ID de l'utilisateur
+    public function getUserEvents($userId)
+{
+    echo "Recherche des événements pour l'utilisateur avec ID: " . $userId; // Déboguer l'ID de l'utilisateur
 
-        // Exécution de la requête et vérification du succès
-        if ($stmt->execute()) {
-            return true;  // L'événement a été ajouté avec succès
-        } else {
-            return false;  // L'ajout de l'événement a échoué
+    $query = "SELECT id, title, date, location FROM events WHERE user_id = :user_id";
+    $stmt = $this->db->prepare($query);
+    $stmt->execute([':user_id' => $userId]);
+
+    $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    var_dump($events); // Affiche les événements récupérés
+    return $events; 
+}    private function handleImageUpload($image)
+    {
+        if ($image && $image['error'] === UPLOAD_ERR_OK) {
+            $imagePath = 'uploads/' . basename($image['name']);
+            move_uploaded_file($image['tmp_name'], $imagePath);
+            return $imagePath;
         }
+        return null;
     }
-    public function getUserEvents($user_id) {
-        $query = "SELECT * FROM events WHERE user_id = :user_id";
-        $stmt = $this->db->getConnection()->prepare($query);
-        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-        $stmt->execute();
-
-        return $stmt->fetchAll();
-    }
-   // EventModel.php
-public function getAllEvents() {
-    // La requête pour récupérer tous les événements
-    $query = "SELECT * FROM events";
-    $stmt = $this->db->getConnection()->prepare($query);
-    $stmt->execute();
-    
-    // Retourner tous les résultats sous forme de tableau
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-
-    
-}
-?>
