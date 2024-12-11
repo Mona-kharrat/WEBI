@@ -36,24 +36,22 @@ class EventModel
         ]);
     }
 
-    public function getUserEvents($userId)
-{
-    echo "Recherche des événements pour l'utilisateur avec ID: " . $userId; // Déboguer l'ID de l'utilisateur
-
-    $query = "SELECT id, title, date, location FROM events WHERE user_id = :user_id";
-    $stmt = $this->db->prepare($query);
-    $stmt->execute([':user_id' => $userId]);
-
-    $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    var_dump($events); // Affiche les événements récupérés
-    return $events; 
-}    private function handleImageUpload($image)
-    {
-        if ($image && $image['error'] === UPLOAD_ERR_OK) {
-            $imagePath = 'uploads/' . basename($image['name']);
-            move_uploaded_file($image['tmp_name'], $imagePath);
-            return $imagePath;
-        }
-        return null;
-    }
+     // Fonction pour récupérer les événements d'un utilisateur spécifique
+     public function getUserEvents($userId)
+     {
+         // Connexion à la base de données
+         $pdo = Database::getConnection();
+ 
+         // Préparation de la requête SQL pour récupérer les événements de l'utilisateur
+         $stmt = $pdo->prepare("SELECT * FROM events WHERE user_id = :user_id");
+         $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+         
+         // Exécution de la requête
+         $stmt->execute();
+ 
+         // Récupération des résultats
+         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+     }
+    
+    
 }

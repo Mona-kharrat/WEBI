@@ -1,20 +1,21 @@
 <?php
 session_start();
 
+// Vérification de la session utilisateur
 if (!isset($_SESSION['user']['id'])) {
     header("Location: ../authentification\Authentification.php");
     exit();
 }
+
 // Récupérer les erreurs de session et les données du formulaire
 $event_errors = $_SESSION['event_errors'] ?? [];
 $formData = $_SESSION['formData'] ?? [];
+echo "ID utilisateur connecté : " . $_SESSION['user']['id'];
 
 // Nettoyer les erreurs après leur affichage
 unset($_SESSION['event_errors']);
 unset($_SESSION['formData']);
-echo "ID utilisateur connecté : " . $_SESSION['user']['id'];
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -53,7 +54,7 @@ echo "ID utilisateur connecté : " . $_SESSION['user']['id'];
                 <!-- Titre -->
                 <div class="mb-3">
                     <label for="title" class="form-label">Titre de l'évènement</label>
-                    <input type="text" class="form-control" id="title" name="title" value="<?= htmlspecialchars($formData['title'] ?? '') ?>" required>
+                    <input type="text" class="form-control" id="title" name="title" value="<?= htmlspecialchars($formData['title'] ?? '') ?>" >
                     <?php if (isset($event_errors['title'])): ?>
                         <div class="text-danger"><?= $event_errors['title'] ?></div>
                     <?php endif; ?>

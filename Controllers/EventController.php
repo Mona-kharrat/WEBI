@@ -5,7 +5,6 @@ require_once '../Models/EventModel.php';
 
 class EventController
 {
-    // Méthode pour ajouter un événement
     public function add()
     {
         // Vérification de la session utilisateur
@@ -63,7 +62,6 @@ class EventController
         }
     }
     
-
     // Validation des champs du formulaire
     private function validateForm($title, $description, $date, $time, $location, $category)
     {
@@ -79,7 +77,7 @@ class EventController
         return $event_errors;
     }
 
-    // Méthode pour afficher les événements d'un utilisateur
+
     public function showMyEvents()
     {
         // Vérification de la session utilisateur
@@ -88,25 +86,29 @@ class EventController
             header("Location: ../Views/authentification/Authentification.php");
             exit();
         }
-
-        // Si la session est correcte, afficher l'ID de l'utilisateur
+    
+        // Récupérer l'ID de l'utilisateur depuis la session
         $userId = $_SESSION['user']['id'];
-        echo "Recherche des événements pour l'utilisateur avec ID: " . $userId . "<br>";
-
-        // Instanciation du modèle et récupération des événements
+    
+        // Instanciation du modèle et récupération des événements de l'utilisateur
         $eventModel = new EventModel();
         $events = $eventModel->getUserEvents($userId);
-
-        // Vérification des événements récupérés
+    
+        // Vérification si des événements ont été trouvés
         if ($events) {
+            // Optionnel : Vous pouvez mettre à jour la session avec les événements récupérés, si vous le souhaitez
             $_SESSION['events'] = $events;
         } else {
+            // Aucun événement trouvé, afficher un message approprié
             echo "Aucun événement trouvé pour cet utilisateur.";
+            return; // Vous pouvez aussi rediriger ici si nécessaire
         }
-
-        // Redirection vers la vue pour afficher les événements
+    
+        // Redirection vers la vue qui affichera les événements
         require_once '../Views/user/ShowMyEvents.php';
     }
+    
+
 }
 
 // Gestion des actions via les paramètres GET

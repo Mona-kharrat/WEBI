@@ -1,16 +1,19 @@
 <?php
 session_start();
 
-// Vérifier si les événements existent dans la session
-$events = isset($_SESSION['events']) ? $_SESSION['events'] : [];
-
-// Déboguer: Afficher le contenu de $events
-var_dump($events);  // Vérifie les événements avant de les afficher
-
+// Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['user']['id'])) {
     header("Location: /webi/Views/Authentification.php");
     exit();
 }
+
+// Récupérer les événements depuis la session
+$events = isset($_SESSION['events']) ? $_SESSION['events'] : [];
+
+// Déboguer : afficher le contenu de $events
+echo '<pre>';
+var_dump($events);  // Affiche le contenu de $events
+echo '</pre>';
 ?>
 
 <!DOCTYPE html>
