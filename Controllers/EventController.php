@@ -14,7 +14,7 @@ class EventController
             header("Location: ../Views/authentification/Authentification.php");
             exit();
         }
-
+    
         // Vérification du formulaire
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $title = $_POST['title'] ?? '';
@@ -23,13 +23,28 @@ class EventController
             $time = $_POST['time'] ?? '';
             $location = $_POST['location'] ?? '';
             $category = $_POST['category'] ?? '';
-            $image = $_FILES['image'] ?? null;
-
+            $image = $_FILES['image'] ?? '';
+    
             // Validation du formulaire
-            $errors = $this->validateForm($title, $description, $date, $time, $location, $category);
-
+            $event_errors = $this->validateForm($title, $description, $date, $time, $location, $category);
+    
+            // Vérification de l'extension de l'image
+            if ($image && $image['error'] === UPLOAD_ERR_OK) {
+                $allowedExtensions = ['png', 'jpg', 'jpeg'];
+                $fileInfo = pathinfo($image['name']);
+                $fileExtension = strtolower($fileInfo['extension']);
+    
+                if (!in_array($fileExtension, $allowedExtensions)) {
+                    $event_errors['image'] = 'Seules les images PNG, JPG et JPEG sont autorisées.';
+                }
+            } elseif ($image && $image['error'] !== UPLOAD_ERR_OK) {
+                $event_errors['image'] = 'Une erreur est survenue lors du téléchargement de l\'image.';
+            } elseif (empty($image['name'])) {
+                $event_errors['image'] = 'Une image est requise.';
+            }
+    
             // Si pas d'erreur, création de l'événement
-            if (empty($errors)) {
+            if (empty($event_errors)) {
                 try {
                     $eventModel = new EventModel();
                     $eventModel->createEvent($title, $description, $date, $time, $location, $category, $image);
@@ -40,26 +55,28 @@ class EventController
                 }
             } else {
                 // Affichage des erreurs
-                foreach ($errors as $error) {
-                    echo '<p style="color: red;">' . htmlspecialchars($error) . '</p>';
-                }
+                $_SESSION['event_errors'] = $event_errors;
+                $_SESSION['formData'] = compact('title', 'description', 'date', 'time', 'location', 'category', 'image');
+                header("Location: ../Views/user/AddEvent.php");
+                exit();
             }
         }
     }
+    
 
     // Validation des champs du formulaire
     private function validateForm($title, $description, $date, $time, $location, $category)
     {
-        $errors = [];
+        $event_errors = [];
 
-        if (empty($title)) $errors[] = "Le titre est requis.";
-        if (empty($description)) $errors[] = "La description est requise.";
-        if (empty($date)) $errors[] = "La date est requise.";
-        if (empty($time)) $errors[] = "L'heure est requise.";
-        if (empty($location)) $errors[] = "Le lieu est requis.";
-        if (empty($category)) $errors[] = "La catégorie est requise.";
+        if (empty($title)) $event_errors[] = "Le titre est requis.";
+        if (empty($description)) $event_errors[] = "La description est requise.";
+        if (empty($date)) $event_errors[] = "La date est requise.";
+        if (empty($time)) $event_errors[] = "L'heure est requise.";
+        if (empty($location)) $event_errors[] = "Le lieu est requis.";
+        if (empty($category)) $event_errors[] = "La catégorie est requise.";
 
-        return $errors;
+        return $event_errors;
     }
 
     // Méthode pour afficher les événements d'un utilisateur
