@@ -34,11 +34,13 @@
 
                                 </p>
                                 <button class="btn btn-outline-primary btn-sm register-btn" 
-                                data-title="<?php echo htmlspecialchars($event['title']); ?>" 
-                                data-date="<?php echo htmlspecialchars($event['date']); ?>" 
-                                data-location="<?php echo htmlspecialchars($event['location']); ?>">
-                                    <i class="fas fa-user-plus"></i> S'inscrire
-                                </button>
+        data-id="<?php echo htmlspecialchars($event['id']); ?>" 
+        data-title="<?php echo htmlspecialchars($event['title']); ?>" 
+        data-date="<?php echo htmlspecialchars($event['date']); ?>" 
+        data-location="<?php echo htmlspecialchars($event['location']); ?>">
+    <i class="fas fa-user-plus"></i> S'inscrire
+</button>
+
                             </div>
                         </div>
                     </div>
@@ -78,28 +80,27 @@
             })
             .catch(error => console.log('Erreur lors du chargement de la navbar:', error));
         
-    </script>
-    <script>
-        document.querySelectorAll('.register-btn').forEach(button => {
+   
+            document.querySelectorAll('.register-btn').forEach(button => {
     button.addEventListener('click', function() {
         const eventId = this.getAttribute('data-id');
-        const userId = <?php echo $_SESSION['user']['id']; ?>; // Récupération de l'ID utilisateur en session
 
-        fetch('controller_path.php?action=register', {
+        fetch('../../Controllers/EventController.php?action=register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ event_id: eventId, user_id: userId })
+            body: JSON.stringify({ event_id: eventId })
         })
         .then(response => response.text())
         .then(data => {
-            alert('Inscription réussie!');
-            // Optionnel : Mettre à jour l'interface utilisateur si nécessaire
+            alert(data); // Pour afficher le message de confirmation
+            location.reload(); // Recharger la page pour refléter les changements
         })
         .catch(error => console.error('Erreur lors de l\'inscription :', error));
     });
 });
+
 
     </script>
 </body>
