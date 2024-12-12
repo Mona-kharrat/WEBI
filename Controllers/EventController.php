@@ -208,7 +208,6 @@ class EventController
 
             // Si pas d'erreur, mise à jour de l'événement
             if (empty($event_errors)) {
-                
                 $eventModel = new EventModel();
                 $eventModel->updateEvent($title, $date, $location,$eventId, $userId);
 
@@ -251,9 +250,12 @@ if (isset($_GET['action'])) {
         case 'register':
             $controller->register();
             break;
-            case 'update':
-                $controller->update();
-                break;
+        case 'update':
+            $controller->update();
+            break;
+        case 'delete':
+            $controller->delete();
+            break;
         default:
             echo "Action non valide.";
             break;

@@ -16,18 +16,7 @@
         }
 
         /* Navbar styles */
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 50px;
-            background-color: rgba(2, 77, 112, 0.85); /* Blue background */
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 999;
-            transition: transform 0.3s ease, background-color 0.3s ease;
-        }
+    
 
         /* Navbar links container */
         .navbar-nav {
@@ -63,6 +52,35 @@
         .navbar a:hover::before {
             width: 100%;
         }
+         /* Hidden class for navbar */
+         .navbar.hidden {
+            transform: translateY(-100%);
+        }
+        
+        /* Scrolled class for navbar */
+        .navbar.scrolled {
+            background-color: rgba(0, 100, 200, 0.85); /* Changer la couleur au défilement */
+        }
+        .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 50px;
+    background-color: rgba(2, 77, 112, 0.85); /* Blue background */
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 999;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.navbar-right {
+    display: flex;
+    gap: 30px; /* Espace entre les éléments */
+    margin-left: auto; /* Pousse le groupe à l'extrême droite */
+}
+
+
 
         /* Dropdown styles */
         .dropdown {
@@ -71,13 +89,40 @@
         }
 
         .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: rgba(2, 77, 112, 0.85);
-            min-width: 160px;
-            z-index: 1;
-        }
+    display: none;
+    position: absolute;
+    background-color: rgba(2, 77, 112, 0.85);
+    min-width: 160px;
+    max-width: calc(100vw - 20px); /* Empêche le menu de dépasser la largeur de la fenêtre */
+    z-index: 1;
+    overflow-wrap: break-word; /* Gère les longues chaînes de texte */
+    right: 0; /* Aligne le menu à droite du dropdown */
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2); /* Ajoute une ombre pour le style */
+    border-radius: 4px;
+    overflow: hidden; /* Coupe les débordements éventuels */
+}
 
+.dropdown-content .dropdown-item {
+    color: white;
+    text-decoration: none;
+    padding: 12px 16px;
+    position: relative;
+    display: block;
+    white-space: nowrap; /* Empêche le texte de s'étendre sur plusieurs lignes */
+    overflow: hidden; /* Cache les débordements de texte */
+    text-overflow: ellipsis; /* Ajoute des points de suspension si le texte est trop long */
+}
+.dropdown-content::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 10px solid rgba(2, 77, 112, 0.85); /* Ajoute une flèche vers le haut */
+}
         .dropdown:hover .dropdown-content {
             display: block;
         }
@@ -123,15 +168,8 @@
             }
         }
 
-        /* Hidden class for navbar */
-        .navbar.hidden {
-            transform: translateY(-100%);
-        }
-        
-        /* Scrolled class for navbar */
-        .navbar.scrolled {
-            background-color: rgba(0, 100, 200, 0.85); /* Changer la couleur au défilement */
-        }
+       
+
     </style>
 </head>
 <body>
@@ -139,6 +177,7 @@
 <!-- Navbar -->
 <nav class="navbar">
     <a class="navbar-brand" href="index.php"><i class="fas fa-home"></i> WEBI</a>
+    <div class="navbar-right">
     <div class="dropdown">
         <a class="nav-link" href="#"><i class="fas fa-tools"></i> Gestion</a>
         <div class="dropdown-content">
@@ -155,6 +194,7 @@
             <a class="dropdown-item" href="{{ path('forgot-pass') }}"><i class="fas fa-key"></i> Mot de passe oublié</a>
             <a class="dropdown-item" href="{{ path('app_profil') }}"><i class="fas fa-user"></i> Voir mon profil</a>
         </div>
+    </div>
     </div>
 </nav>
 
