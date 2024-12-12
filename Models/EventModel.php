@@ -92,7 +92,10 @@ public function isEventExists($eventId)
     $stmt->execute();
     return $stmt->fetchColumn() > 0;
 }
-
+public function updateEvent($title, $date, $location,$eventId,$userId) {
+    $stmt = $this->db->prepare("UPDATE events SET title = ?, date = ?, location = ? WHERE id = ? AND user_id = ?");
+    return $stmt->execute([$title, $date, $location, $eventId, $userId]);
+}
     
 
     public function getAllEvents()
@@ -125,9 +128,6 @@ public function isEventExists($eventId)
             throw new Exception('Une erreur est survenue lors du téléchargement de l\'image.');
         }
     }
-    public function updateEvent($title, $date, $location) {
-        $stmt = $this->db->prepare("UPDATE events SET title = ?, date = ?, location = ? WHERE id = ? AND user_id = ?");
-        return $stmt->execute([$title, $date, $location, $eventId, $userId]);
-    }
+    
 }
 ?>

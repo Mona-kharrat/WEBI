@@ -208,8 +208,9 @@ class EventController
 
             // Si pas d'erreur, mise à jour de l'événement
             if (empty($event_errors)) {
+                
                 $eventModel = new EventModel();
-                $eventModel->updateEvent($title, $date, $location);
+                $eventModel->updateEvent($title, $date, $location,$eventId, $userId);
 
                 $_SESSION['message'] = "Événement modifié avec succès.";
                 header('Location: ../Views/user/ShowMyEvents.php');
@@ -250,6 +251,9 @@ if (isset($_GET['action'])) {
         case 'register':
             $controller->register();
             break;
+            case 'update':
+                $controller->update();
+                break;
         default:
             echo "Action non valide.";
             break;
