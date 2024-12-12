@@ -1,13 +1,9 @@
 <?php
 session_start();
-
-// Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['user']['id'])) {
     header("Location: /webi/Views/Authentification.php");
     exit();
 }
-
-// Récupérer les événements depuis la base de données
 require_once "../../Models/EventModel.php";
 $eventModel = new EventModel();
 $userId = $_SESSION['user']['id'];

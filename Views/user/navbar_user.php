@@ -138,12 +138,13 @@
 
 <!-- Navbar -->
 <nav class="navbar">
-    <a class="navbar-brand"><i class="fas fa-home"></i> WEBI</a>
+    <a class="navbar-brand" href="index.php"><i class="fas fa-home"></i> WEBI</a>
     <div class="dropdown">
         <a class="nav-link" href="#"><i class="fas fa-tools"></i> Gestion</a>
         <div class="dropdown-content">
             <a class="dropdown-item" href="AddEvent.php"><i class="fas fa-calendar-plus"></i> Ajouter Évènement</a>
-            <a class="dropdown-item" href="ShowMyEvents.php"><i class="fas fa-calendar-check"></i> Mes Évènements</a>
+            <a class="dropdown-item" href="ShowMyEvents.php"><i class="fas fa-calendar-check"></i> Mes Évènements crées</a>
+            <a class="dropdown-item" href="EventInscri.php"><i class="fas fa-calendar-check"></i> Mes Évènements inscrits</a>
             <a class="dropdown-item" href="ShowAllEvents.php"><i class="fas fa-calendar-alt"></i> Autres Évènements</a>
         </div>
     </div>

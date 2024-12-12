@@ -68,14 +68,31 @@ class EventModel
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    public function registerUserForEvent($eventId, $userId)
-    {
-        $query = "UPDATE events SET inscri = 1 WHERE id = :eventId AND user_id = :userId";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':eventId', $eventId);
-        $stmt->bindParam(':userId', $userId);
-        $stmt->execute();
-    }
+    public function getUserRegisteredEvents($userId)
+{
+    $query = "SELECT * FROM events WHERE inscri = 1 AND user_id = :userId";
+    $stmt = $this->db->prepare($query);
+    $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+    public function registerUserForEvent($eventId)
+{
+    $query = "UPDATE events SET inscri = 1 WHERE id = :eventId";
+    $stmt = $this->db->prepare($query);
+    $stmt->bindParam(':eventId', $eventId);
+    $stmt->execute();
+}
+public function isEventExists($eventId)
+{
+    $query = "SELECT COUNT(*) FROM events WHERE id = :eventId";
+    $stmt = $this->db->prepare($query);
+    $stmt->bindParam(':eventId', $eventId);
+    $stmt->execute();
+    return $stmt->fetchColumn() > 0;
+}
+
     
 
     public function getAllEvents()

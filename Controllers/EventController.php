@@ -86,23 +86,49 @@ class EventController
     
             return $event_errors;
         }
-    
-    public function register()
-   {
+        public function showRegisteredEvents()
+{
     $this->checkSession();
+    $userId = $_SESSION['user']['id'];
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['event_id'])) {
-        $eventId = $_POST['event_id'];
-        $userId = $_SESSION['user']['id'];
+    if (empty($userId)) {
+        echo "ID utilisateur invalide.";
+        return;
+    }
 
-        $eventModel = new EventModel();
-        $eventModel->registerUserForEvent($eventId, $userId); // Méthode pour enregistrer l'inscription
+    $eventModel = new EventModel();
+    $events = $eventModel->getUserRegisteredEvents($userId);
 
-        echo "Inscription réussie!";
+    if ($events) {
+        require_once '../Views/user/EventInscri.php'; 
     } else {
-        echo "Aucune action valide.";
+        echo "Aucun événement inscrit trouvé pour cet utilisateur.";
     }
 }
+
+    
+        public function register()
+        {
+            $this->checkSession();
+        
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $data = json_decode(file_get_contents('php://input'), true);
+                $eventId = $data['event_id'];
+               
+        
+                $eventModel = new EventModel();
+        
+                if ($eventModel->isEventExists($eventId)) {
+                    $eventModel->registerUserForEvent($eventId);
+                    echo "Inscription réussie!";
+                } else {
+                    echo "Événement non trouvé.";
+                }
+            } else {
+                echo "Requête invalide.";
+            }
+        }
+        
 
 
     public function showMyEvents()
@@ -223,13 +249,6 @@ if (isset($_GET['action'])) {
             break;
         case 'register':
             $controller->register();
-            break;
-        case 'delete':
-            $controller->delete();
-            break;
-
-        case 'update':
-            $controller->update();
             break;
         default:
             echo "Action non valide.";
