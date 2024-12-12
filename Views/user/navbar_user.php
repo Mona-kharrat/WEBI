@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Navbar Moderne avec Masquage</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Inclus Font Awesome -->
     <style>
         /* Global styles */
         body {
@@ -20,7 +21,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px 50px;
-            background-color: rgba(0, 123, 255, 0.85); /* Blue background */
+            background-color: rgba(2, 77, 112, 0.85); /* Blue background */
             position: fixed;
             width: 100%;
             top: 0;
@@ -46,46 +47,21 @@
             position: relative;
             display: inline-block; /* Pour s'assurer que chaque lien est en ligne */
         }
-
-        /* Underline animation on hover */
-        .navbar a::after {
+        
+        .navbar a::before {
             content: '';
             position: absolute;
             width: 0;
             height: 2px;
             background-color: white;
-            left: 0;
-            bottom: -5px;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
             transition: width 0.3s ease;
         }
 
-        .navbar a:hover::after {
+        .navbar a:hover::before {
             width: 100%;
-        }
-
-        /* Navbar logo */
-        .navbar-brand {
-            color: white;
-            font-size: 2.8rem;
-            font-weight: bold;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-        }
-
-        /* Connexion button */
-        .navbar .btn-connexion {
-            background-color: white;
-            color: #007bff;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            border: 2px solid white;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        .navbar .btn-connexion:hover {
-            background-color: #007bff;
-            color: white;
         }
 
         /* Dropdown styles */
@@ -97,7 +73,7 @@
         .dropdown-content {
             display: none;
             position: absolute;
-            background-color: rgba(0, 123, 255, 0.85);
+            background-color: rgba(2, 77, 112, 0.85);
             min-width: 160px;
             z-index: 1;
         }
@@ -108,13 +84,31 @@
 
         .dropdown-item {
             color: white;
-            padding: 12px 16px;
             text-decoration: none;
+            padding: 12px 16px;
+            position: relative;
             display: block;
+            overflow: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .dropdown-item:hover {
-            background-color: rgba(0, 100, 200, 0.85);
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .dropdown-item::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: -100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: left 0.3s ease;
+        }
+
+        .dropdown-item:hover::before {
+            left: 0;
         }
 
         /* Media query for responsiveness */
@@ -138,24 +132,29 @@
         .navbar.scrolled {
             background-color: rgba(0, 100, 200, 0.85); /* Changer la couleur au défilement */
         }
-        
     </style>
 </head>
 <body>
 
 <!-- Navbar -->
 <nav class="navbar">
-    <a class="navbar-brand" href="../home.html">WEBI</a>
-    <a class="nav-link" href="../home.html">Retour à l'accueil</a>
+    <a class="navbar-brand" href="index.php"><i class="fas fa-home"></i> WEBI</a>
     <div class="dropdown">
-        <a class="nav-link" href="#">Gestion</a>
+        <a class="nav-link" href="#"><i class="fas fa-tools"></i> Gestion</a>
         <div class="dropdown-content">
-            <a class="dropdown-item" href="AddEvent.php">Ajouter Évènement</a>
-            <a class="dropdown-item" href="ShowMyEvents.php">Mes Évènements</a>
-            <a class="dropdown-item" href="ShowOtherEvent.html">Autres Évènements</a>
+            <a class="dropdown-item" href="AddEvent.php"><i class="fas fa-calendar-plus"></i> Ajouter Évènement</a>
+            <a class="dropdown-item" href="ShowMyEvents.php"><i class="fas fa-calendar-check"></i> Mes Évènements</a>
+            <a class="dropdown-item" href="ShowAllEvents.php"><i class="fas fa-calendar-alt"></i> Autres Évènements</a>
         </div>
     </div>
-    <a class="nav-link btn btn-outline-light" href="../authentification/Authentification.php">Connexion</a>
+    <div class="dropdown">
+        <a class="nav-link" href="#"><i class="fas fa-cog"></i> Paramètres</a>
+        <div class="dropdown-content">
+            <a class="dropdown-item" href="../authentification/Authentification.php"><i class="fas fa-sign-out-alt"></i> Se connecter</a>
+            <a class="dropdown-item" href="{{ path('forgot-pass') }}"><i class="fas fa-key"></i> Mot de passe oublié</a>
+            <a class="dropdown-item" href="{{ path('app_profil') }}"><i class="fas fa-user"></i> Voir mon profil</a>
+        </div>
+    </div>
 </nav>
 
 <!-- JavaScript to hide/show navbar on scroll -->

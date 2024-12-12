@@ -16,17 +16,18 @@
     }
     
     .jumbotron {
-      height: 95vh; 
-      background: url('../images/hero2.png') no-repeat center center;
-      background-size: cover;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      text-shadow: 2px 2px 4px rgba(68, 68, 68, 0.76);
-      position: relative;
-    }
+  height: 100vh; 
+  background: url('images/hero2.png') no-repeat center center;
+  background-size: cover;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-shadow: 2px 2px 4px rgba(68, 68, 68, 0.76);
+  position: relative;
+  min-height: 100vh; /* Pour s'assurer que l'image prend toute la hauteur disponible */
+}
 
    
     .slogan {
@@ -70,15 +71,15 @@
     <h1 class="display-4" ><strong>Organisez vos événements en toute simplicité</strong></h1>
     <p class="lead slogan">Votre hub pour planifier, gérer et briller lors de vos événements.</p>
 
-    <a href="Views\authentification\inscription.php" class="btn btn-primary btn-lg">Créer un compte</a>
-</div>
+    <a href="Views/authentification/inscription.php" class="btn btn-lg" style="background-color: rgb(2, 77, 112); color: white;">Créer un compte</a>
+    </div>
   
 
 <section class="container text-center my-5">
-  <h2 class="mb-4 font-weight-bold" style="margin-top: 80px;">Bienvenue sur <span style="color: #007bff;">WEBI !</span></h2>
+  <h2 class="mb-4 font-weight-bold" style="margin-top: 80px;">Bienvenue sur <span style="color:rgb(2, 77, 112);">WEBI !</span></h2>
   <div class="row align-items-center">
       <div class="col-md-6">
-          <img src="../images/organize_events.jpg" class="img-fluid" style="max-width: 100%; height: auto;">
+          <img src="images/organize_events.jpg" class="img-fluid" style="max-width: 100%; height: auto;">
       </div>
       <div class="col-md-6">
           <p class="lead">
@@ -88,7 +89,7 @@
               Notre plateforme intuitive rend l'organisation simple et efficace, tant pour les participants 
               que pour les administrateurs.
               Rejoignez-nous et transformez vos événements en succès !
-              <a href="#" class="btn btn-primary btn-lg mt-3">Commencez dès maintenant</a>
+              <a href="#" class="btn btn-lg mt-3" style="color:rgb(2, 77, 112);">Commencez dès maintenant</a>
             </section>
           </p>
       </div>
@@ -105,7 +106,7 @@
   <div class="row">
     <div class="col-md-4">
       <div class="card service-card">
-        <img src="../images/planification.jpg" class="card-img-top" alt="Planification">
+        <img src="images/planification.jpg" class="card-img-top" alt="Planification">
         <div class="card-body">
           <h5 class="card-title">Planification d'Événements</h5>
           <p class="card-text">Planifiez facilement vos conférences, ateliers et webinaires grâce à notre plateforme intuitive.</p>
@@ -114,7 +115,7 @@
     </div>
     <div class="col-md-4">
       <div class="card service-card">
-        <img src="../images/inscri.jpg" class="card-img-top" alt="Inscription">
+        <img src="images/inscri.jpg" class="card-img-top" alt="Inscription">
         <div class="card-body">
           <h5 class="card-title">Inscription aux Événements</h5>
           <p class="card-text">Inscrivez-vous rapidement aux événements qui vous intéressent et recevez des rappels automatiques.</p>
@@ -123,7 +124,7 @@
     </div>
     <div class="col-md-4">
       <div class="card service-card">
-        <img src="../images/gestion.jpg" class="card-img-top" alt="Gestion">
+        <img src="images/gestion.jpg" class="card-img-top" alt="Gestion">
         <div class="card-body">
           <h5 class="card-title">Gestion des événements</h5>
           <p class="card-text">Les administrateurs peuvent gérer les utilisateurs, suivre les inscriptions et optimiser les événements.</p>
@@ -133,21 +134,49 @@
   </div>
 </section>
 </section>
+<section id="contact" class="container my-5">
+  <div class="text-center mb-4">
+    <h2>Nous Contacter</h2>
+    <p>Une question ou besoin d'aide ? Envoyez-nous un message !</p>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <img src="images/contact_us.jpg" class="img-fluid" alt="Contactez-nous">
+    </div>
+    <div class="col-md-6">
+      <form>
+        <div class="form-group">
+          <label for="name">Nom</label>
+          <input type="text" class="form-control" id="name" placeholder="Votre nom" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Adresse Email</label>
+          <input type="email" class="form-control" id="email" placeholder="Votre adresse email" required>
+        </div>
+        <div class="form-group">
+          <label for="message">Message</label>
+          <textarea class="form-control" id="message" rows="5" placeholder="Votre message" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="background-color: rgb(2, 77, 112); border-color: rgb(2, 77, 112);">Envoyer</button>
+      </form>
+    </div>
+  </div>
+</section>
+
 
 <footer class="bg-dark text-white py-4">
   <div class="container text-center">
     <p>&copy; 2024 webi - Tous droits réservés.</p>
   </div>
 </footer>
- 
 <script>
-  fetch('navbar.html')
-    .then(response => response.text())
-    .then(data => {
-      document.getElementById('navbar-container').innerHTML = data;
-    })
-    .catch(error => console.log('Erreur lors du chargement de la navbar:', error));
-</script>
+        fetch('navbar.html')
+            .then(response => response.text())
+            .then(data => {
+              document.getElementById('navbar-container').innerHTML = data;
+            })
+            .catch(error => console.log('Erreur lors du chargement de la navbar:', error));
+    </script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

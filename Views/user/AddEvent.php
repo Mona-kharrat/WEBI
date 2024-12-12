@@ -19,6 +19,7 @@ unset($_SESSION['formData']);
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Créer un Évènement</title>
@@ -34,7 +35,7 @@ unset($_SESSION['formData']);
     </style>
 </head>
 <body>
-    <div id="navbar-container"></div>
+    <div id="navbar-container"></div> 
     <div class="container-fluid vh-100 d-flex justify-content-center align-items-start">
         <div class="card p-4" style="width: 90%; max-width: 900px;">
             <h2 class="text-center mb-4">Créer un Évènement</h2>
@@ -123,5 +124,13 @@ unset($_SESSION['formData']);
             </form>
         </div>
     </div>
+    <script>
+        fetch('navbar_user.php')
+            .then(response => response.text())
+            .then(data => {
+              document.getElementById('navbar-container').innerHTML = data;
+            })
+            .catch(error => console.log('Erreur lors du chargement de la navbar:', error));
+    </script>
 </body>
 </html>

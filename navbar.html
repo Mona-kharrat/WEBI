@@ -1,205 +1,184 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet">
+    <title>Navbar Moderne avec Masquage</title>
+
+    <!-- Inclusion de Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    
+
     <style>
+        /* Global styles */
         body {
+            margin: 0;
+            padding: 0;
             font-family: 'Poppins', sans-serif;
-            background: #fafafa;
+            background-color: #f7f7f7;
+            height: 2000px; /* Juste pour permettre le défilement */
         }
 
-        .wrapper {
+        /* Navbar styles */
+        .navbar {
             display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 50px;
+            background-color: rgba(2, 77, 112, 0.85); /* Blue background */
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 999;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        /* Navbar links container */
+        .navbar-nav {
+            display: flex;
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+       
+
+           /* Navbar links */
+           .navbar a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 0;
+            transition: color 0.3s ease;
+            position: relative;
+            display: inline-block; /* Pour s'assurer que chaque lien est en ligne */
+        }
+        .navbar a::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background-color: white;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+        }
+    
+        .navbar a:hover::before {
             width: 100%;
         }
+        /* Dropdown styles */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
 
-        #sidebar {
-            min-width: 250px;
-            max-width: 250px;
-            height: 100vh; /* Remplace 1000px par 100vh pour s'ajuster à la hauteur de la fenêtre */
-            background: #5c6bc0;
-            color: #fff;
-            transition: all 0.3s;
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color:rgba(2, 77, 112, 0.85);
+            min-width: 160px;
+            z-index: 1;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-item {
+            color: white;
+            text-decoration: none;
+            padding: 12px 16px;
+            position: relative;
+            display: block;
+            overflow: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+    
+        .dropdown-item::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: -100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: left 0.3s ease;
+        }
+    
+        .dropdown-item:hover::before {
+            left: 0;
+        }
+
+        /* Media query for responsiveness */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 10px 30px;
+            }
+
+            .navbar a {
+                font-size: 14px;
+            }
         }
         
-
-        #sidebar.active {
-            margin-left: -250px;
+        /* Underline animation on hover */
+        .navbar a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background-color: white;
+            left: 0;
+            bottom: -5px;
+            transition: width 0.3s ease;
         }
-
-        #sidebar .sidebar-header {
-            padding: 20px;
-            background: #5c6bc0;
-        }
-
-        #sidebar ul.components {
-            padding: 20px 0;
-        }
-
-        #sidebar ul li {
-            margin-bottom: 10px;
-        }
-
-        #sidebar ul li .btn {
-            width: 100%;
-            text-align: left;
-            color: #fff;
-            background-color: #5c6bc0;
-            border: none;
-        }
-
-        #sidebar ul li .btn:hover {
-            background-color: #5c6bc0;
-        }
-
-        #sidebar ul li ul {
-            padding-left: 20px;
-        }
-
-        #sidebar ul li ul a {
-            color: #fff;
-        }
-
-        #sidebar ul li ul a:hover {
-            text-decoration: underline;
-        }
-
-        .navbar-nav .dropdown-menu {
-            width: 200px;
-        }
-        /* Conteneur du logo */
-.sidebar-header {
-    padding: 20px;
-    background: #2a2a72; /* Couleur de fond dynamique pour le logo */
-    text-align: center;
-}
-
-/* Conteneur du logo (image et icône) */
-.logo-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: fadeIn 2s ease-out;
-}
-
-/* Style de l'icône du logo */
-.logo-icon {
-    font-size: 2.4rem; /* Taille de l'icône */
-    color: #2a2a72; /* Couleur de l'icône */
-    margin-right: 5px; /* Espacement entre l'icône et le texte */
-    transition: transform 0.3s ease;
-    margin-top: 15px;
-}
-/* Style de l'image du logo */
-.logo-image {
-    width: 90px; /* Ajuster la taille de l'image */
-    height: auto;
-    transition: transform 0.3s ease;
-}
-
-
-/* Effet au survol de l'image du logo */
-.logo-container:hover {
-    transform: scale(1.1); /* Agrandir l'image légèrement au survol */
-}
-
-
     </style>
 </head>
-
 <body>
-    <div class="wrapper">
-        <!-- Sidebar -->
-        <nav id="sidebar">
-            <div class="sidebar-header">
-                <div class="logo-container">
-                    <span class="logo-icon">
-                        <i class="fas fa-laptop"></i> <!-- Icône inspirée par le concept du logo -->
-                    </span>
-                    <img src="../images/logo.png" alt="WEBI Logo" class="logo-image">
-                </div>
-            </div>
-            
-            
-            
-            <ul class="list-unstyled components">
-                <li>
-                    <!-- Home Dropdown -->
-                    <a class="btn dropdown-toggle" href="#" role="button" data-bs-toggle="collapse" data-bs-target="#homeSubmenu" aria-expanded="false" aria-controls="homeSubmenu">
-                        <i class="fas fa-home"></i> Évènement
-                    </a>
-                    <ul class="collapse list-unstyled" id="homeSubmenu">
-                        <li><a href="AddEvent.php"><i class="fas fa-angle-right"></i> Ajouter Évènement</a></li>
-                        <li><a href="ShowMyEvents.php"><i class="fas fa-angle-right"></i>Mes Évènements</a></li>
-                        <li><a href="ShowOtherEvent.html"><i class="fas fa-angle-right"></i>Autres Évènements</a></li>
-                    
-                    </ul>
-                </li>
-                <li>
-                    <!-- Pages Dropdown -->
-                    <a class="btn dropdown-toggle" href="#" role="button" data-bs-toggle="collapse" data-bs-target="#pageSubmenu" aria-expanded="false" aria-controls="pageSubmenu">
-                        <i class="fas fa-file-alt"></i> Pages
-                    </a>
-                    <ul class="collapse list-unstyled" id="pageSubmenu">
-                        <li><a href="#"><i class="fas fa-angle-right"></i> Page 1</a></li>
-                        <li><a href="#"><i class="fas fa-angle-right"></i> Page 2</a></li>
-                        <li><a href="#"><i class="fas fa-angle-right"></i> Page 3</a></li>
-                    </ul>
-                </li>
-                <li><button class="btn"><i class="fas fa-info-circle"></i> About</button></li>
-                <li><button class="btn"><i class="fas fa-briefcase"></i> Portfolio</button></li>
-                <li><button class="btn"><i class="fas fa-envelope"></i> Contact</button></li>
-            </ul>
-        </nav>
 
-        <!-- Page Content -->
-    <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-        <!-- Sidebar Toggle Button -->
-        <button type="button" id="sidebarCollapse" class="btn" style="background-color: #6d7fcc;">
-            <i class="fa-duotone fa-solid fa-bars"></i>
-        </button>
-
-        <!-- Navbar Content -->
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" id="btn">
-                        <i class="fas fa-cog"></i> Paramètres
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="btn">
-                        <li><a class="dropdown-item" href="{{ path('app_logout') }}"><i class="fas fa-sign-out-alt fa-fw"></i> Se déconnecter</a></li>
-                        <li><a class="dropdown-item" href="{{ path('forgot-pass') }}"><i class="fas fa-key fa-fw"></i> Mot de passe oublié</a></li>
-                        <li><a class="dropdown-item" href="{{ path('app_profil') }}"><i class="fas fa-user fa-fw"></i> Voir mon profil</a></li>
-                    </ul>
-                </li>
-            </ul>
+<!-- Navbar -->
+<nav class="navbar">
+    <a class="navbar-brand" href="index.php">WEBI</a>
+    <a class="nav-link" href="#services"><i class="fa-thin fa-square-info"></i> À propos</a>
+    <a class="nav-link" href="#contact"><i class="fa-regular fa-envelope"></i> Contacter</a>
+    
+    <div class="dropdown">
+        <a class="nav-link" href="#"><i class="fas fa-cog"></i> Paramètres</a>
+        <div class="dropdown-content">
+            <a class="dropdown-item" href="../authentification/Authentification.php"><i class="fas fa-sign-out-alt"></i> Se connecter</a>
+            <a class="dropdown-item" href="{{ path('forgot-pass') }}"><i class="fas fa-key"></i> Mot de passe oublié</a>
+            <a class="dropdown-item" href="{{ path('app_profil') }}"><i class="fas fa-user"></i> Voir mon profil</a>
         </div>
     </div>
 </nav>
 
+<!-- JavaScript to hide/show navbar on scroll -->
+<script>
+    let lastScrollTop = 0;
+    const navbar = document.querySelector('.navbar');
 
-        <div id="content" class="container-fluid">
+    // Detect scroll direction and hide/show navbar
+    window.addEventListener('scroll', function() {
+        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-        </div>
-    </div>
+        // Scroll down: hide navbar
+        if (scrollTop > lastScrollTop) {
+            navbar.classList.add('hidden');
+        } else {
+            navbar.classList.remove('hidden');
+        }
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        // Update last scroll position
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
 
-    <script>
-        document.getElementById('sidebarCollapse').addEventListener('click', function () {
-            document.getElementById('sidebar').classList.toggle('active');
-        });
-    </script>
+        // Change background when scrolling
+        if (scrollTop > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+</script>
+
 </body>
-
 </html>

@@ -1,4 +1,3 @@
-<!-- ShowAllEvents.php -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -14,21 +13,30 @@
         <h2 class="mb-4">Explorer les Événements</h2>
         <div class="row" id="eventsList">
             <?php
-            // Vérification que les événements existent et affichage
+            session_start();
+            require_once '../../Models/EventModel.php';
+            
+            $eventModel = new EventModel();
+            $events = $eventModel->getAllEvents();
+
             if (!empty($events)) {
                 foreach ($events as $event) {
                     ?>
                     <div class="col-md-4 mb-4">
                         <div class="card h-100">
-                            <!-- Affichage de l'image si elle existe -->
                             <img src="../<?php echo htmlspecialchars($event['image']); ?>" class="card-img-top" alt="Événement">
                             <div class="card-body">
                                 <h5 class="card-title"><?php echo htmlspecialchars($event['title']); ?></h5>
                                 <p class="card-text">
                                     <i class="fas fa-calendar-alt"></i> <?php echo htmlspecialchars($event['date']); ?><br>
                                     <i class="fas fa-map-marker-alt"></i> <?php echo htmlspecialchars($event['location']); ?>
+                                    <i class="fas fa-calendar-alt"></i> <?php echo htmlspecialchars($event['inscri']); ?><br>
+
                                 </p>
-                                <button class="btn btn-outline-primary btn-sm register-btn" data-title="<?php echo htmlspecialchars($event['title']); ?>" data-date="<?php echo htmlspecialchars($event['date']); ?>" data-location="<?php echo htmlspecialchars($event['location']); ?>">
+                                <button class="btn btn-outline-primary btn-sm register-btn" 
+                                data-title="<?php echo htmlspecialchars($event['title']); ?>" 
+                                data-date="<?php echo htmlspecialchars($event['date']); ?>" 
+                                data-location="<?php echo htmlspecialchars($event['location']); ?>">
                                     <i class="fas fa-user-plus"></i> S'inscrire
                                 </button>
                             </div>
@@ -62,14 +70,37 @@
                 });
             });
         });
-    </script>
-    <script>
-        fetch('navbar_user.html')
+
+        fetch('navbar_user.php')
             .then(response => response.text())
             .then(data => {
               document.getElementById('navbar-container').innerHTML = data;
             })
             .catch(error => console.log('Erreur lors du chargement de la navbar:', error));
+        
+    </script>
+    <script>
+        document.querySelectorAll('.register-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const eventId = this.getAttribute('data-id');
+        const userId = <?php echo $_SESSION['user']['id']; ?>; // Récupération de l'ID utilisateur en session
+
+        fetch('controller_path.php?action=register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ event_id: eventId, user_id: userId })
+        })
+        .then(response => response.text())
+        .then(data => {
+            alert('Inscription réussie!');
+            // Optionnel : Mettre à jour l'interface utilisateur si nécessaire
+        })
+        .catch(error => console.error('Erreur lors de l\'inscription :', error));
+    });
+});
+
     </script>
 </body>
 </html>
