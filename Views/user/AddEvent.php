@@ -119,6 +119,7 @@ unset($_SESSION['formData']);
                         <div class="text-danger"><?= $event_errors['image'] ?></div>
                     <?php endif; ?>
                 </div>
+                <input type="hidden" id="inscri" name="inscri" >
 
                 <button type="submit" class="btn btn-secondary w-100">Ajouter l'évènement</button>
             </form>

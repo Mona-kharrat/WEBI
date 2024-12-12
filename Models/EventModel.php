@@ -1,6 +1,8 @@
 <?php
 
-require_once '../../database.php';
+require_once realpath(__DIR__ . '/../database.php');
+
+
 
 class EventModel
 {
@@ -19,10 +21,9 @@ class EventModel
         }
 
         $userId = $_SESSION['user']['id'];
-        $imagePath = $this->handleImageUpload($image);
 
         $query = "INSERT INTO events (title, description, date, time, location, category, image, user_id, inscri) 
-                  VALUES (:title, :description, :date, :time, :location, :category, :image, :user_id, :inscri)";
+                  VALUES (:title, :description, :date, :time, :location, :category, :image, :user_id, 0)";
         
         $stmt = $this->db->prepare($query);
         $stmt->execute([
@@ -32,7 +33,7 @@ class EventModel
             ':time' => $time,
             ':location' => $location,
             ':category' => $category,
-            ':image' => $imagePath,
+            ':image' => $image,
             ':user_id' => $userId
         ]);
     }
