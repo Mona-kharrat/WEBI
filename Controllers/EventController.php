@@ -140,6 +140,74 @@ class EventController
             echo "Aucun événement trouvé.";
         }
     }
+    public function delete()
+    {
+        $this->checkSession(); // Assurez-vous que l'utilisateur est connecté
+
+        if (isset($_POST['event_id'])) {
+            $eventId = intval($_POST['event_id']);
+            $userId = $_SESSION['user']['id'];
+
+            $eventModel = new EventModel();
+            $success = $eventModel->deleteEventById($eventId, $userId);
+
+            if ($success) {
+                $_SESSION['message'] = "Événement supprimé avec succès.";
+            } else {
+                $_SESSION['error'] = "Erreur lors de la suppression de l'événement.";
+            }
+        } else {
+            $_SESSION['error'] = "ID d'événement manquant.";
+        }
+
+        header("Location: ../Views/user/ShowMyEvents.php");
+        exit();
+    }
+    public function update()
+    {
+        $this->checkSession();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['event_id'])) {
+            $eventId = $_POST['event_id'];
+            $title = $_POST['title'] ?? '';
+            $date = $_POST['date'] ?? '';
+            $location = $_POST['location'] ?? '';
+            $image = $_FILES['image'] ?? '';
+            $userId = $_SESSION['user']['id'];
+
+            // Validation du formulaire
+            $event_errors = $this->validateForm2($title, '', $date, '', $location, '');
+
+            
+
+            // Si pas d'erreur, mise à jour de l'événement
+            if (empty($event_errors)) {
+                $eventModel = new EventModel();
+                $eventModel->updateEvent($title, $date, $location);
+
+                $_SESSION['message'] = "Événement modifié avec succès.";
+                header('Location: ../Views/user/ShowMyEvents.php');
+                exit();
+            } else {
+                $_SESSION['event_errors'] = $event_errors;
+                $_SESSION['formData'] = compact('title', 'date', 'location', );
+                header("Location: ../Views/user/ShowMyEvents.php");
+                exit();
+            }
+        }
+    }
+
+    // Validation des champs du formulaire
+ private function validateForm2($title, $description, $date, $time, $location, $category)
+    {
+        $event_errors = [];
+
+        if (empty($title)) $event_errors[] = "Le titre est requis.";
+        if (empty($date)) $event_errors[] = "La date est requise.";
+        if (empty($location)) $event_errors[] = "Le lieu est requis.";
+
+        return $event_errors;
+    }
 }
 if (isset($_GET['action'])) {
     $controller = new EventController();
@@ -155,6 +223,13 @@ if (isset($_GET['action'])) {
             break;
         case 'register':
             $controller->register();
+            break;
+        case 'delete':
+            $controller->delete();
+            break;
+
+        case 'update':
+            $controller->update();
             break;
         default:
             echo "Action non valide.";

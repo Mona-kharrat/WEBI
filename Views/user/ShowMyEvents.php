@@ -41,7 +41,52 @@ $events = $eventModel->getUserEvents($userId);
                                     <i class="fas fa-calendar-alt"></i> <?php echo htmlspecialchars($event['date']); ?><br>
                                     <i class="fas fa-map-marker-alt"></i> <?php echo htmlspecialchars($event['location']); ?>
                                 </p>
-                                <a href="deleteEvent.php?id=<?php echo $event['id']; ?>" class="btn btn-danger btn-sm">Supprimer</a>
+                                
+                                <!-- Formulaire pour la modification -->
+                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal<?php echo $event['id']; ?>">
+                                    Modifier
+                                </button>
+                                
+
+                                <!-- Modal pour la modification -->
+                                <div class="modal fade" id="editModal<?php echo $event['id']; ?>" tabindex="-1" aria-labelledby="editModalLabel<?php echo $event['id']; ?>" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="editModalLabel<?php echo $event['id']; ?>">Modifier l'événement</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form method="POST" action="\webi\Controllers\EventController.php?action=update">
+                                                    <input type="hidden" name="event_id" value="<?php echo $event['id']; ?>">
+                                                    <div class="mb-3">
+                                                        <label for="title<?php echo $event['id']; ?>" class="form-label">Titre</label>
+                                                        <input type="text" class="form-control" id="title<?php echo $event['id']; ?>" name="title" value="<?php echo htmlspecialchars($event['title']); ?>" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="date<?php echo $event['id']; ?>" class="form-label">Date</label>
+                                                        <input type="date" class="form-control" id="date<?php echo $event['id']; ?>" name="date" value="<?php echo htmlspecialchars($event['date']); ?>" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="location<?php echo $event['id']; ?>" class="form-label">Lieu</label>
+                                                        <input type="text" class="form-control" id="location<?php echo $event['id']; ?>" name="location" value="<?php echo htmlspecialchars($event['location']); ?>" required>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-success">Enregistrer les modifications</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Formulaire pour la suppression -->
+                                <form method="POST" action="\webi\Controllers\EventController.php?action=delete">
+                                    <input type="hidden" name="event_id" value="<?php echo $event['id']; ?>">
+                                    <button type="submit" class="btn btn-danger btn-sm" 
+                                            onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?');">
+                                        Supprimer
+                                    </button>
+                                </form>
+
                             </div>
                         </div>
                     </div>
@@ -59,7 +104,7 @@ $events = $eventModel->getUserEvents($userId);
         fetch('navbar_user.php')
             .then(response => response.text())
             .then(data => {
-              document.getElementById('navbar-container').innerHTML = data;
+                document.getElementById('navbar-container').innerHTML = data;
             })
             .catch(error => console.log('Erreur lors du chargement de la navbar:', error));
     </script>

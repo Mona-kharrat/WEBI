@@ -138,7 +138,7 @@
 
 <!-- Navbar -->
 <nav class="navbar">
-    <a class="navbar-brand" href="index.php"><i class="fas fa-home"></i> WEBI</a>
+    <a class="navbar-brand"><i class="fas fa-home"></i> WEBI</a>
     <div class="dropdown">
         <a class="nav-link" href="#"><i class="fas fa-tools"></i> Gestion</a>
         <div class="dropdown-content">
@@ -150,7 +150,7 @@
     <div class="dropdown">
         <a class="nav-link" href="#"><i class="fas fa-cog"></i> Paramètres</a>
         <div class="dropdown-content">
-            <a class="dropdown-item" href="../authentification/Authentification.php"><i class="fas fa-sign-out-alt"></i> Se connecter</a>
+            <a class="dropdown-item" href="views/authentification/Authentification.php"><i class="fas fa-sign-out-alt"></i> Se connecter</a>
             <a class="dropdown-item" href="{{ path('forgot-pass') }}"><i class="fas fa-key"></i> Mot de passe oublié</a>
             <a class="dropdown-item" href="{{ path('app_profil') }}"><i class="fas fa-user"></i> Voir mon profil</a>
         </div>

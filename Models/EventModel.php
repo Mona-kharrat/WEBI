@@ -13,6 +13,24 @@ class EventModel
         $database = new Database();
         $this->db = $database->getConnection();
     }
+    public function deleteEventById($eventId, $userId)
+    {
+        try {
+            // Préparer la requête de suppression
+            $query = "DELETE FROM events WHERE id = :id AND user_id = :user_id";
+            $stmt = $this->db->prepare($query);
+
+            // Lier les paramètres
+            $stmt->bindParam(':id', $eventId, PDO::PARAM_INT);
+            $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+
+            // Exécuter la requête
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la suppression de l'événement : " . $e->getMessage());
+            return false;
+        }
+    }
 
     public function createEvent($title, $description, $date, $time, $location, $category, $image)
     {
@@ -89,6 +107,10 @@ class EventModel
         } else {
             throw new Exception('Une erreur est survenue lors du téléchargement de l\'image.');
         }
+    }
+    public function updateEvent($title, $date, $location) {
+        $stmt = $this->db->prepare("UPDATE events SET title = ?, date = ?, location = ? WHERE id = ? AND user_id = ?");
+        return $stmt->execute([$title, $date, $location, $eventId, $userId]);
     }
 }
 ?>
