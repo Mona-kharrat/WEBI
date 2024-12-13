@@ -52,7 +52,7 @@ unset($_SESSION['formData']);
             <?php endif; ?>
 
             <form id="eventForm" action="/webi/Controllers/EventController.php?action=add" method="POST" enctype="multipart/form-data">
-                <!-- Titre -->
+                
                 <div class="mb-3">
                     <label for="title" class="form-label">Titre de l'évènement</label>
                     <input type="text" class="form-control" id="title" name="title" value="<?= htmlspecialchars($formData['title'] ?? '') ?>" >

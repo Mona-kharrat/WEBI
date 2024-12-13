@@ -54,7 +54,8 @@ $totalPages = ceil($totalEvents / $limit);
                     ?>
                     <div class="col-md-4 mb-4">
                         <div class="card h-100">
-                            <img src="../<?php echo htmlspecialchars($event['image']); ?>" class="card-img-top" alt="Événement">
+                        <img src="../<?php echo htmlspecialchars($event['image']); ?>" class="card-img-top" alt="Événement">
+
                             <div class="card-body">
                                 <h5 class="card-title"><?php echo htmlspecialchars($event['title']); ?></h5>
                                 <p class="card-text">

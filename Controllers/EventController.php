@@ -5,7 +5,7 @@ require_once '../Models/EventModel.php';
 
 class EventController
 {
-    // Vérifie si l'utilisateur est connecté
+    
     private function checkSession()
     {
         if (!isset($_SESSION['user']['id'])) {
@@ -17,60 +17,62 @@ class EventController
     public function add()
     {
         $this->checkSession();
-            // Vérification de la session utilisateur
-            if (!isset($_SESSION['user']['id'])) {
-                echo "Session user_id non définie. Veuillez vous connecter.";
-                header("Location: ../Views/authentification/Authentification.php");
-                exit();
-            }
-        
-            // Vérification du formulaire
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $title = $_POST['title'] ?? '';
-                $description = $_POST['description'] ?? '';
-                $date = $_POST['date'] ?? '';
-                $time = $_POST['time'] ?? '';
-                $location = $_POST['location'] ?? '';
-                $category = $_POST['category'] ?? '';
-                $image = $_FILES['image'] ?? '';
-        
-                // Validation du formulaire
-                $event_errors = $this->validateForm($title, $description, $date, $time, $location, $category);
-        
-                // Vérification de l'extension de l'image
-                if ($image && $image['error'] === UPLOAD_ERR_OK) {
-                    $allowedExtensions = ['png', 'jpg', 'jpeg'];
-                    $fileInfo = pathinfo($image['name']);
-                    $fileExtension = strtolower($fileInfo['extension']);
-        
-                    if (!in_array($fileExtension, $allowedExtensions)) {
-                        $event_errors['image'] = 'Seules les images PNG, JPG et JPEG sont autorisées.';
-                    }
-                } elseif ($image && $image['error'] !== UPLOAD_ERR_OK) {
-                    $event_errors['image'] = 'Une erreur est survenue lors du téléchargement de l\'image.';
-                } elseif (empty($image['name'])) {
-                    $event_errors['image'] = 'Une image est requise.';
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $title = $_POST['title'] ?? '';
+            $description = $_POST['description'] ?? '';
+            $date = $_POST['date'] ?? '';
+            $time = $_POST['time'] ?? '';
+            $location = $_POST['location'] ?? '';
+            $category = $_POST['category'] ?? '';
+            $image = $_FILES['image'] ?? null;
+
+            // Validation du formulaire
+            $event_errors = $this->validateForm($title, $description, $date, $time, $location, $category);
+
+            // Traitement de l'image
+            $imagePath = null;
+            if ($image && $image['error'] === UPLOAD_ERR_OK) {
+                $uploadsDir = '../uploads/';
+                if (!is_dir($uploadsDir)) {
+                    mkdir($uploadsDir, 0777, true);
                 }
-        
-                // Si pas d'erreur, création de l'événement
-                if (empty($event_errors)) {
-                    try {
-                        $eventModel = new EventModel();
-                        $eventModel->createEvent($title, $description, $date, $time, $location, $category, $image);
-                        header('Location: ../Views/user/ShowMyEvents.php');
-                        exit();
-                    } catch (Exception $e) {
-                        echo '<p style="color: red;">Erreur : ' . htmlspecialchars($e->getMessage()) . '</p>';
+                $fileExtension = pathinfo($image['name'], PATHINFO_EXTENSION);
+                $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+                if (in_array(strtolower($fileExtension), $allowedExtensions)) {
+                    $uniqueName = uniqid() . '.' . $fileExtension;
+                    $targetPath = $uploadsDir . $uniqueName;
+                    if (move_uploaded_file($image['tmp_name'], $targetPath)) {
+                        $imagePath = '../uploads/' . $uniqueName;
+                    } else {
+                        $event_errors['image'] = 'Erreur lors du déplacement de l\'image.';
                     }
                 } else {
-                    // Affichage des erreurs
-                    $_SESSION['event_errors'] = $event_errors;
-                    $_SESSION['formData'] = compact('title', 'description', 'date', 'time', 'location', 'category', 'image');
-                    header("Location: ../Views/user/AddEvent.php");
-                    exit();
+                    $event_errors['image'] = 'Extension de fichier non valide. (jpg, jpeg, png, gif uniquement)';
                 }
+            } else {
+                $event_errors['image'] = 'Une image est requise.';
+            }
+
+            // Création de l'événement si pas d'erreurs
+            if (empty($event_errors)) {
+                try {
+                    $eventModel = new EventModel();
+                    $eventModel->createEvent($title, $description, $date, $time, $location, $category, $imagePath);
+                    header('Location: ../Views/user/ShowMyEvents.php');
+                    exit();
+                } catch (Exception $e) {
+                    echo '<p style="color: red;">Erreur : ' . htmlspecialchars($e->getMessage()) . '</p>';
+                }
+            } else {
+                $_SESSION['event_errors'] = $event_errors;
+                $_SESSION['formData'] = compact('title', 'description', 'date', 'time', 'location', 'category');
+                header("Location: ../Views/user/AddEvent.php");
+                exit();
             }
         }
+    }
+
         
         // Validation des champs du formulaire
         private function validateForm($title, $description, $date, $time, $location, $category)
@@ -110,7 +112,7 @@ class EventController
         public function register()
         {
             $this->checkSession();
-        
+            $userId = $_SESSION['user']['id'];
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $data = json_decode(file_get_contents('php://input'), true);
                 $eventId = $data['event_id'];
@@ -119,7 +121,7 @@ class EventController
                 $eventModel = new EventModel();
         
                 if ($eventModel->isEventExists($eventId)) {
-                    $eventModel->registerUserForEvent($eventId);
+                    $eventModel->registerUserForEvent($userId,$eventId);
                     echo "Inscription réussie!";
                 } else {
                     echo "Événement non trouvé.";
@@ -222,9 +224,7 @@ class EventController
             }
         }
     }
-
-    // Validation des champs du formulaire
- private function validateForm2($title, $description, $date, $time, $location, $category)
+     private function validateForm2($title, $description, $date, $time, $location, $category)
     {
         $event_errors = [];
 
@@ -250,12 +250,9 @@ if (isset($_GET['action'])) {
         case 'register':
             $controller->register();
             break;
-        case 'update':
-            $controller->update();
-            break;
-        case 'delete':
-            $controller->delete();
-            break;
+            case 'update':
+                $controller->update();
+                break;
         default:
             echo "Action non valide.";
             break;
