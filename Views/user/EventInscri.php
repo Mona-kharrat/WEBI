@@ -89,6 +89,10 @@ usort($events, function($a, $b) {
         .card p strong {
             color: #333;
         }
+
+        .d-flex {
+            gap: 20px;
+        }
     </style>
 </head>
 <body>
@@ -99,29 +103,27 @@ usort($events, function($a, $b) {
     </header>
     <main class="container mt-5">
         <?php if (!empty($events)) : ?>
-            <div class="row">
+            <div class="d-flex flex-wrap justify-content-center">
                 <?php foreach ($events as $event) : ?>
-                    <div class="col-md-4">
-                        <div class="card">
-                            <img src="<?= htmlspecialchars($event['image']) ?>" class="card-img-top" alt="Image de l'événement">
-                            <div class="card-body">
-                                <h5 class="card-title"><?= htmlspecialchars($event['title']) ?></h5>
-                                <p class="card-text"><?= htmlspecialchars($event['description']) ?></p>
-                                <p><strong>Date :</strong> <?= htmlspecialchars($event['date']) ?></p>
-                                <p><strong>Lieu :</strong> <?= htmlspecialchars($event['location']) ?></p>
-                                <p><strong>Catégorie :</strong> <?= htmlspecialchars($event['category']) ?></p>
-                            </div>
+                    <div class="card" style="width: 18rem;">
+                        <img src="<?= htmlspecialchars($event['image']) ?>" class="card-img-top" alt="Image de l'événement">
+                        <div class="card-body">
+                            <h5 class="card-title"><?= htmlspecialchars($event['title']) ?></h5>
+                            <p class="card-text">Description : <?= htmlspecialchars($event['description']) ?></p>
+                            <p><strong>Date :</strong> <?= htmlspecialchars($event['date']) ?></p>
+                            <p><strong>Lieu :</strong> <?= htmlspecialchars($event['location']) ?></p>
+                            <p><strong>Catégorie :</strong> <?= htmlspecialchars($event['category']) ?></p>
                         </div>
                     </div>
                 <?php endforeach; ?>
             </div>
         <?php else : ?>
-            <p>Aucun événement trouvé.</p>
+            <p class="text-center">Aucun événement trouvé.</p>
         <?php endif; ?>
     </main>
 
     <script>
-          fetch('navbar_user.php')
+        fetch('navbar_user.php')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('navbar-container').innerHTML = data;

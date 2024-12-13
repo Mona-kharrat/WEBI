@@ -29,68 +29,93 @@ $totalPages = ceil($totalEvents / $limit);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
-          header {
-            color: rgba(2, 77, 112, 0.85); /* même couleur que la navbar en gras */
+        header {
+            color: rgba(2, 77, 112, 0.85);
             padding: 2rem;
             text-align: center;
-            position: relative;
-            font-weight: bold; /* Ajout de la mise en gras */
-            margin-top:60px;
+            font-weight: bold;
+            margin-top: 60px;
+        }
+
+        .card {
+            width: 18rem;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin: 15px auto;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-img-top {
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #024d70;
+        }
+
+        .card-text {
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .pagination {
+            justify-content: center;
         }
     </style>
 </head>
 <body>
-    <div id="navbar-container"></div> 
+    <div id="navbar-container"></div>
 
     <div class="container my-5">
         <header>
             <h1 class="mb-4">Explorer les Événements</h1>
         </header>
 
-        <div class="row" id="eventsList">
-            <?php
-            if (!empty($events)) {
-                foreach ($events as $event) {
-                    ?>
-                    <div class="col-md-4 mb-4">
-                        <div class="card h-100">
-                        <img src="../<?php echo htmlspecialchars($event['image']); ?>" class="card-img-top" alt="Événement">
-
-                            <div class="card-body">
-                                <h5 class="card-title"><?php echo htmlspecialchars($event['title']); ?></h5>
-                                <p class="card-text">
-                                    <i class="fas fa-calendar-alt"></i> <?php echo htmlspecialchars($event['date']); ?><br>
-                                    <i class="fas fa-map-marker-alt"></i> <?php echo htmlspecialchars($event['location']); ?>
-                                </p>
-                                <button class="btn btn-outline-primary btn-sm register-btn" 
-                                        data-id="<?php echo htmlspecialchars($event['id']); ?>" 
-                                        data-title="<?php echo htmlspecialchars($event['title']); ?>" 
-                                        data-date="<?php echo htmlspecialchars($event['date']); ?>" 
-                                        data-location="<?php echo htmlspecialchars($event['location']); ?>">
-                                    <i class="fas fa-user-plus"></i> S'inscrire
-                                </button>
-                            </div>
+        <div class="d-flex flex-wrap justify-content-center" id="eventsList">
+            <?php if (!empty($events)): ?>
+                <?php foreach ($events as $event): ?>
+                    <div class="card">
+                        <img src="../<?php echo htmlspecialchars($event['image']); ?>" class="card-img-top img-fluid" alt="Événement">
+                        <div class="card-body">
+                            <h5 class="card-title"><?php echo htmlspecialchars($event['title']); ?></h5>
+                            <p class="card-text">
+                                <i class="fas fa-calendar-alt"></i> <?php echo htmlspecialchars($event['date']); ?><br>
+                                <i class="fas fa-map-marker-alt"></i> <?php echo htmlspecialchars($event['location']); ?>
+                            </p>
+                            <button class="btn btn-outline-primary btn-sm register-btn" 
+                                    data-id="<?php echo htmlspecialchars($event['id']); ?>" 
+                                    data-title="<?php echo htmlspecialchars($event['title']); ?>" 
+                                    data-date="<?php echo htmlspecialchars($event['date']); ?>" 
+                                    data-location="<?php echo htmlspecialchars($event['location']); ?>">
+                                <i class="fas fa-user-plus"></i> S'inscrire
+                            </button>
                         </div>
                     </div>
-                    <?php
-                }
-            } else {
-                echo "<p>Aucun événement trouvé.</p>";
-            }
-            ?>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>Aucun événement trouvé.</p>
+            <?php endif; ?>
         </div>
     </div>
 
     <nav>
-        <!--nav pagination-->
-        <ul class="pagination">
-            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <li class="page-item <?php if ($i === $page) echo 'active'; ?>">
-                    <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
-                </li>
-            <?php endfor; ?>
-        </ul>
-    </nav>
+    <ul class="pagination">
+        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+            <li class="page-item <?php echo ($i === $page) ? 'active' : ''; ?>">
+                <a class="page-link" href="javascript:void(0)" data-page="<?php echo $i; ?>"><?php echo $i; ?></a>
+            </li>
+        <?php endfor; ?>
+    </ul>
+</nav>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -138,33 +163,41 @@ $totalPages = ceil($totalEvents / $limit);
                 .catch(error => console.error('Erreur lors de l\'inscription :', error));
             });
         });
+        document.addEventListener('DOMContentLoaded', function () {
+    function loadEvents(page) {
+        fetch(`?page=${page}`)
+            .then(response => response.text())
+            .then(data => {
+                const parser = new DOMParser();
+                const newDoc = parser.parseFromString(data, 'text/html');
 
+                // Mise à jour de la liste d'événements
+                const newEvents = newDoc.querySelectorAll('#eventsList .card');
+                const eventsList = document.getElementById('eventsList');
+                eventsList.innerHTML = ''; // Réinitialisation
+                newEvents.forEach(event => eventsList.appendChild(event));
+
+                // Mise à jour de la pagination
+                const newPagination = newDoc.querySelector('.pagination');
+                const pagination = document.querySelector('.pagination');
+                pagination.innerHTML = newPagination.innerHTML;
+                attachPaginationEvents(); // Réattacher les événements
+            })
+            .catch(error => console.error('Erreur lors du chargement des événements :', error));
+    }
+
+    function attachPaginationEvents() {
         document.querySelectorAll('.page-link').forEach(link => {
-            link.addEventListener('click', function(e) {
+            link.addEventListener('click', function (e) {
                 e.preventDefault();
-                const page = this.getAttribute('href').split('=')[1];
-                loadEvents(page); // Fonction JavaScript pour charger les événements selon la page
+                const page = this.getAttribute('data-page');
+                loadEvents(page); // Charger la page sélectionnée
             });
         });
-//pagination
-        function loadEvents(page) {
-    fetch(`?page=${page}`)
-        .then(response => response.text())
-        .then(data => {
-            const eventsList = document.getElementById('eventsList');
-            eventsList.innerHTML = ''; // Nettoyage uniquement des cartes d'événements
-            
-            // Récupération seulement des div contenant les cartes
-            const newEventsHTML = new DOMParser().parseFromString(data, 'text/html')
-                .querySelectorAll('#eventsList > .col-md-4.mb-4');
+    }
 
-            // Ajout des nouvelles cartes d'événements
-            newEventsHTML.forEach(eventCard => {
-                eventsList.appendChild(eventCard.cloneNode(true));
-            });
-        })
-        .catch(error => console.error('Erreur de chargement des événements:', error));
-}
+    attachPaginationEvents(); // Initialiser les événements au chargement de la page
+});
 
     </script>
 </body>

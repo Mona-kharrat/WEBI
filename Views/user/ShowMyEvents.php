@@ -106,7 +106,7 @@ $events = $eventModel->getUserEvents($userId);
             foreach ($events as $event) {
                 ?>
                 <div class="card" style="width: 18rem;">
-                    <img src="../uploads/<?php echo htmlspecialchars($event['image']); ?>" class="card-img-top" alt="Événement">
+                    <img src="../<?php echo htmlspecialchars($event['image']); ?>" class="card-img-top img-fluid" alt="Événement">
                     <div class="card-body">
                         <h5 class="card-title"><?php echo htmlspecialchars($event['title']); ?></h5>
                         <p class="card-text">
