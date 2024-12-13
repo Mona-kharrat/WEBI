@@ -150,7 +150,7 @@ public function register()
 
 private function sendEventRegistrationEmail($userId, $eventId) {
     $mail = new PHPMailer(true);
-    $userModel = new UserModel();
+    $userModel = new personneModel();
     $user = $userModel->getUserById($userId);
     $eventModel = new EventModel();
     $event = $eventModel->getEventById($eventId);
@@ -239,6 +239,29 @@ private function sendEventRegistrationEmail($userId, $eventId) {
         header("Location: ../Views/user/ShowMyEvents.php");
         exit();
     }
+    public function deleteAdmin()
+    {
+        $this->checkSession(); // Assurez-vous que l'utilisateur est connecté
+    
+        if (isset($_GET['id'])) {
+            $eventId = intval($_GET['id']);
+            $eventModel = new EventModel();
+            
+            $success = $eventModel->deleteEvent($eventId);
+    
+            if ($success) {
+                $_SESSION['message'] = "Événement supprimé avec succès.";
+            } else {
+                $_SESSION['error'] = "Erreur lors de la suppression de l'événement.";
+            }
+        } else {
+            $_SESSION['error'] = "ID d'événement manquant.";
+        }
+    
+        header("Location: ../Views/admin/gestion_event.php");
+        exit();
+    }
+    
     public function update()
     {
         $this->checkSession();
@@ -298,9 +321,15 @@ if (isset($_GET['action'])) {
         case 'register':
             $controller->register();
             break;
-            case 'update':
-                $controller->update();
-                break;
+        case 'update':
+            $controller->update();
+            break;
+        case 'deleteAdmin':
+            $controller->deleteAdmin();
+            break;
+        case 'delete':
+            $controller->delete();
+            break;
         default:
             echo "Action non valide.";
             break;

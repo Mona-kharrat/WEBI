@@ -31,7 +31,38 @@ class EventModel
             return false;
         }
     }
+    public function deleteEvent($eventId)
+    {
+        try {
+            // Préparer la requête de suppression
+            $query = "DELETE FROM events WHERE id = :id";
+            $stmt = $this->db->prepare($query);
 
+            // Lier les paramètres
+            $stmt->bindParam(':id', $eventId, PDO::PARAM_INT);
+
+            // Exécuter la requête
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la suppression de l'événement : " . $e->getMessage());
+            return false;
+        }
+    }
+    public function getEventById($id)
+    {
+        try {
+            $query = "SELECT * FROM events WHERE id = :id";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération de l'événement : " . $e->getMessage());
+            return false;
+        }
+    }
+    
+    
     public function createEvent($title, $description, $date, $time, $location, $category, $image)
     {
         if (!isset($_SESSION['user']['id'])) {
@@ -145,13 +176,7 @@ public function getTotalEvents()
     return $stmt->fetchColumn();
 }
 
-public function getEventById($eventId)
-{
-    $stmt = $this->db->prepare("SELECT * FROM events WHERE id = :id");
-    $stmt->bindParam(':id', $eventId, PDO::PARAM_INT);
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+
     
 }
 ?>

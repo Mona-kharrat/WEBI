@@ -1,14 +1,39 @@
 <?php
+require_once realpath(__DIR__ . '/../database.php'); 
 
-require_once '../database.php'; 
-
-class UserModel {
+class personneModel {
     private $db;
 
     public function __construct() {
         $this->db = new Database();  // Connexion à la base de données
     }
 
+    
+    public function getTotalUsersCount() 
+{
+    $stmt = $this->db->getConnection()->prepare("SELECT COUNT(*) FROM personnes");
+    $stmt->execute();
+    return $stmt->fetchColumn();
+}
+        public function getUsers($limit = 10, $offset = 0) {
+             // Calculez la limite et le décalage pour paginati
+        
+             if (!isset($_SESSION['user']['id'])) {
+                return []; // Pas d'événements si non connecté
+            }
+        
+            $stmt = $this->db->getConnection()->prepare(
+                "SELECT * FROM personnes 
+                 ORDER BY id DESC 
+                 LIMIT :limit OFFSET :offset"
+            );
+            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        
+    
     // Insertion d'un utilisateur
     public function insertUser($username, $email, $password) {
         // Préparer la requête d'insertion
@@ -56,7 +81,6 @@ class UserModel {
         $stmt = $this->db->getConnection()->prepare("SELECT id FROM personnes WHERE email = :email");
         $stmt->bindParam(':email', $email);
         $stmt->execute();
-        
         // Retourne l'ID de l'utilisateur, ou null si l'utilisateur n'existe pas
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result ? $result['id'] : null;

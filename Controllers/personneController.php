@@ -3,10 +3,10 @@ require_once '../vendor/autoload.php';
 require_once '../Models/personneModel.php';
 use PHPMailer\PHPMailer\PHPMailer;
 class AuthController {
-    private $userModel;
+    private $personneModel;
 
     public function __construct() {
-        $this->userModel = new UserModel();
+        $this->personneModel = new personneModel();
     }
 
     public function register() {
@@ -27,19 +27,19 @@ class AuthController {
             }
 
             // Vérification si l'utilisateur existe déjà
-            if ($this->userModel->userExists($email)) {
+            if ($this->personneModel->userExists($email)) {
                 $errors['email'] = "L'email existe déjà !";
             }
 
             // S'il n'y a pas d'erreurs, procédez à l'insertion
             if (empty($errors)) {
-                if ($this->userModel->insertUser($username, $email, $password)) {
+                if ($this->personneModel->insertUser($username, $email, $password)) {
                     // Enregistrez les informations de l'utilisateur dans la session après l'inscription
                     session_start();
                     $_SESSION['user'] = [
                         'username' => $username,
                         'email' => $email,
-                        'id' => $this->userModel->getUserIdByEmail($email) // Assurez-vous d'avoir une méthode pour récupérer l'ID
+                        'id' => $this->personneModel->getUserIdByEmail($email) // Assurez-vous d'avoir une méthode pour récupérer l'ID
                     ];
 
                     
@@ -126,7 +126,7 @@ class AuthController {
 
             // Si aucun champ n'est vide, on vérifie l'utilisateur
             if (empty($errors)) {
-                $user = $this->userModel->getUserByEmail($email);
+                $user = $this->personneModel->getUserByEmail($email);
 
                 // Vérification de l'utilisateur et du mot de passe
                 if ($user && password_verify($password, $user['password'])) {
@@ -156,37 +156,14 @@ class AuthController {
         header("Location: ../Views/authentification/Authentification.php");
         exit();
     }
-    function logout() {
-        // Détaille la session
-        $_SESSION = array();
-    
-        // Si la session existe, la détruire
-        if (session_id()) {
-            session_destroy();
-        }
-    
-        // Redirige vers la page de connexion ou page d'accueil
-        header("Location: ../index.php"); // Ou la page de ton choix
-        exit();
-    }
 }
 
-if (isset($_GET['action'])){
-    $authController = new AuthController();
-    switch ($_GET['action']){
-        case 'login':
-            $authController->login();
-            break;
-            case 'register':
-                $authController->register();
-                break;
-                case 'logout':
-                    $authController->logout();
-                    break;
-
-    }
-    
+// Déterminez l'action à effectuer
+$authController = new AuthController();
+if (isset($_GET['action']) && $_GET['action'] === 'login') {
+    $authController->login();
+} else {
+    $authController->register();
 }
-
 
 ?>
