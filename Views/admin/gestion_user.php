@@ -55,6 +55,7 @@ $totalPages = ceil($totalUsers / $limit);
             <th>nom</th>
             <th>email</th>
             <th>role</th>
+            <th>status</th>
             <th>created_at</th>
             <th>action</th>
         </tr>
@@ -67,7 +68,9 @@ $totalPages = ceil($totalUsers / $limit);
                     <td><?php echo htmlspecialchars($user['username']); ?></td>
                     <td><?php echo htmlspecialchars($user['email']); ?></td>
                     <td><?php echo htmlspecialchars($user['role']); ?></td>
-
+                    <td>
+                        <?php echo ($user['status'] == 1) ? 'Bloqué' : 'Actif'; ?>
+                    </td>
                     <td><?php echo htmlspecialchars($user['created_at']); ?></td>
                     <td class="action-btns">
                         <button class="btn btn-danger btn-sm validate-btn" data-id="<?php echo htmlspecialchars($user['id']); ?>">
@@ -76,9 +79,33 @@ $totalPages = ceil($totalUsers / $limit);
                         <button  class="btn btn-success btn-sm moderate-btn" data-id="<?php echo htmlspecialchars($user['id']); ?>">
                         <i class="fas fa-unlock"></i> 
                         </button>
-                        <button class="btn btn-outline-danger btn-sm delete-btn" data-id="<?php echo htmlspecialchars($user['id']); ?>">
+                        <button class="btn btn-primary btn-sm delete-btn" data-id="<?php echo htmlspecialchars($user['id']); ?>">
                             <i class="fas fa-trash"></i> 
                         </button>
+                        <button class="btn btn-warning btn-sm update-btn" data-bs-toggle="modal" data-bs-target="#editModal<?php echo htmlspecialchars($user['id']); ?>">
+                            <i class="fas fa-pen"></i> 
+                        </button>
+                        <!-- Modal pour la modification -->
+                        <div class="modal fade" id="editModal<?php echo htmlspecialchars($user['id']); ?>" tabindex="-1" aria-labelledby="editModalLabel<?php echo htmlspecialchars($user['id']); ?>" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editModalLabel<?php echo htmlspecialchars($user['id']); ?>">Modifier le rôle</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form method="POST" action="../../Controllers/personneController.php?action=update">
+                                            <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($user['id']); ?>">
+                                            <div class="mb-3">
+                                                <label for="role<?php echo htmlspecialchars($user['id']); ?>" class="form-label">Rôle</label>
+                                                <input type="text" class="form-control" id="role<?php echo htmlspecialchars($user['id']); ?>" name="role" value="<?php echo htmlspecialchars($user['role']); ?>" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-success">Enregistrer les modifications</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -117,14 +144,62 @@ $totalPages = ceil($totalUsers / $limit);
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    document.querySelectorAll('.delete-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            const userId = this.getAttribute('data-id');
-            if (confirm('Voulez-vous supprimer cet user ?')) {
-                window.location.href = `../../Controllers/userController.php?action=deleteAdmin&id=${userId}`;
-            }
+    document.addEventListener('DOMContentLoaded', function () {
+        // Gestion du bouton de blocage (validate-btn)
+        document.querySelectorAll('.validate-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const userId = this.getAttribute('data-id');
+                if (confirm('Voulez-vous bloquer cet utilisateur ?')) {
+                    fetch(`../../Controllers/personneController.php?action=blockUser&id=${userId}`, {
+                        method: 'GET'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Utilisateur bloqué avec succès.');
+                            location.reload();  // Recharger la page pour voir les modifications
+                        } else {
+                            alert('Erreur lors du blocage de l\'utilisateur.');
+                        }
+                    })
+                    
+                }
+            });
+        });
+
+        // Gestion du bouton de déblocage (moderate-btn)
+        document.querySelectorAll('.moderate-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const userId = this.getAttribute('data-id');
+                if (confirm('Voulez-vous débloquer cet utilisateur ?')) {
+                    fetch(`../../Controllers/personneController.php?action=unblockUser&id=${userId}`, {
+                        method: 'GET'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Utilisateur débloqué avec succès.');
+                            location.reload();  
+                        } else {
+                            alert('Erreur lors du déblocage de l\'utilisateur.');
+                        }
+                    })
+                    
+                }
+            });
+        });
+
+        // Gestion du bouton de suppression (delete-btn)
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const userId = this.getAttribute('data-id');
+                if (confirm('Voulez-vous supprimer cet utilisateur ?')) {
+                    window.location.href = `../../Controllers/personneController.php?action=deleteUser&id=${userId}`;
+                    location.reload();}
+            });
         });
     });
 </script>
+
 </body>
 </html>
