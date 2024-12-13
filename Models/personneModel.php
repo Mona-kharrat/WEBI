@@ -1,6 +1,6 @@
 <?php
 
-require_once '../../database.php'; 
+require_once realpath(__DIR__ . '/../database.php');
 
 class personneModel {
     private $db;
