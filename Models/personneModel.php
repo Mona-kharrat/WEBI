@@ -39,6 +39,7 @@ class personneModel {
                 throw new Exception("Erreur lors de la mise à jour : " . implode(", ", $stmt->errorInfo()));
             }
         }
+        
     // Insertion d'un utilisateur
     public function insertUser($username, $email, $password) {
         // Préparer la requête d'insertion
