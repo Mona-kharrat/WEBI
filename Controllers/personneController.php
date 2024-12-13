@@ -112,14 +112,37 @@ class AuthController {
         header("Location: ../Views/authentification/Authentification.php");
         exit();
     }
+    function logout() {
+        // Détaille la session
+        $_SESSION = array();
+    
+        // Si la session existe, la détruire
+        if (session_id()) {
+            session_destroy();
+        }
+    
+        // Redirige vers la page de connexion ou page d'accueil
+        header("Location: ../index.php"); // Ou la page de ton choix
+        exit();
+    }
 }
 
-// Déterminez l'action à effectuer
-$authController = new AuthController();
-if (isset($_GET['action']) && $_GET['action'] === 'login') {
-    $authController->login();
-} else {
-    $authController->register();
+if (isset($_GET['action'])){
+    $authController = new AuthController();
+    switch ($_GET['action']){
+        case 'login':
+            $authController->login();
+            break;
+            case 'register':
+                $authController->register();
+                break;
+                case 'logout':
+                    $authController->logout();
+                    break;
+
+    }
+    
 }
+
 
 ?>

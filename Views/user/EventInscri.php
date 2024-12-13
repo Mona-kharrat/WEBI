@@ -75,7 +75,7 @@ usort($events, function($a, $b) {
                 <?php foreach ($events as $event) : ?>
                     <div class="col-md-4 mb-4">
                         <div class="card">
-                            <img src="<?= htmlspecialchars($event['image']) ?>" class="card-img-top" alt="Image de l'événement">
+                        <img src="../<?php echo htmlspecialchars($event['image']); ?>" class="card-img-top" alt="Événement">
                             <div class="card-body">
                                 <h5 class="card-title"><?= htmlspecialchars($event['title']) ?></h5>
                                 <p class="card-text"><?= htmlspecialchars($event['description']) ?></p>

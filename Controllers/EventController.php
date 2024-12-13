@@ -110,27 +110,37 @@ class EventController
 
     
         public function register()
-        {
-            $this->checkSession();
-            $userId = $_SESSION['user']['id'];
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $data = json_decode(file_get_contents('php://input'), true);
-                $eventId = $data['event_id'];
-               
-        
-                $eventModel = new EventModel();
-        
-                if ($eventModel->isEventExists($eventId)) {
-                    $eventModel->registerUserForEvent($userId,$eventId);
-                    echo "Inscription réussie!";
+{
+    $this->checkSession();
+    $userId = $_SESSION['user']['id'];
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        if (isset($data['event_id'])) {
+            $eventId = $data['event_id'];
+            $eventModel = new EventModel();
+
+            // Vérifier si l'événement existe
+            if ($eventModel->isEventExists($eventId)) {
+                // Enregistrer l'utilisateur pour l'événement
+                $success = $eventModel->registerUserForEvent($userId, $eventId);
+
+                if ($success) {
+                    echo json_encode(["message" => "Inscription réussie!"]);
                 } else {
-                    echo "Événement non trouvé.";
+                    echo json_encode(["message" => "Vous êtes déjà inscrit à cet événement."]);
                 }
             } else {
-                echo "Requête invalide.";
+                echo json_encode(["message" => "Événement non trouvé."]);
             }
+        } else {
+            echo json_encode(["message" => "ID de l'événement manquant."]);
         }
-        
+    } else {
+        echo json_encode(["message" => "Requête invalide."]);
+    }
+}
 
 
     public function showMyEvents()
