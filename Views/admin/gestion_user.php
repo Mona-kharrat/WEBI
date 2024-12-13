@@ -5,7 +5,7 @@ require_once '../../Models/personneModel.php';
 $personneModel = new personneModel();
 
 // Configuration de la pagination
-$limit = 10;  // Nombre d'utilisateurs par page
+$limit = 6;  // Nombre d'utilisateurs par page
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 

@@ -70,6 +70,12 @@ class personneModel {
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);  // Retourne les informations de l'utilisateur sous forme de tableau associatif
     }
+    public function getUserById($userId) {
+        $stmt = $this->db->getConnection()->prepare("SELECT * FROM personnes WHERE id = :id");
+        $stmt->bindParam(':id', $userId);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC); 
+    }
 
     // Récupérer l'ID de l'utilisateur par son email
     public function getUserIdByEmail($email) {

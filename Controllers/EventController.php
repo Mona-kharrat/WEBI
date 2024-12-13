@@ -1,7 +1,10 @@
 <?php
 session_start();
-
+require_once '../vendor/autoload.php';
 require_once '../Models/EventModel.php';
+use PHPMailer\PHPMailer\PHPMailer;
+
+
 
 class EventController
 {
@@ -109,30 +112,75 @@ class EventController
 }
 
     
-        public function register()
-        {
-            $this->checkSession();
-            $userId = $_SESSION['user']['id'];
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $data = json_decode(file_get_contents('php://input'), true);
-                $eventId = $data['event_id'];
-               
-        
-                $eventModel = new EventModel();
-        
-                if ($eventModel->isEventExists($eventId)) {
-                    $eventModel->registerUserForEvent($userId,$eventId);
-                    echo "Inscription réussie!";
+public function register()
+{
+    $this->checkSession();
+    $userId = $_SESSION['user']['id'];
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        if (isset($data['event_id'])) {
+            $eventId = $data['event_id'];
+            $eventModel = new EventModel();
+
+            // Vérifier si l'événement existe
+            if ($eventModel->isEventExists($eventId)) {
+                // Enregistrer l'utilisateur pour l'événement
+                $success = $eventModel->registerUserForEvent($userId, $eventId);
+
+                if ($success) {
+                    // Envoi de l'email de confirmation
+                    $this->sendEventRegistrationEmail($userId, $eventId);
+
+                    echo json_encode(["message" => "Inscription réussie!"]);
                 } else {
-                    echo "Événement non trouvé.";
+                    echo json_encode(["message" => "Vous êtes déjà inscrit à cet événement."]);
                 }
             } else {
-                echo "Requête invalide.";
+                echo json_encode(["message" => "Événement non trouvé."]);
             }
+        } else {
+            echo json_encode(["message" => "ID de l'événement manquant."]);
         }
-        
+    } else {
+        echo json_encode(["message" => "Requête invalide."]);
+    }
+}
 
+private function sendEventRegistrationEmail($userId, $eventId) {
+    $mail = new PHPMailer(true);
+    $userModel = new personneModel();
+    $user = $userModel->getUserById($userId);
+    $eventModel = new EventModel();
+    $event = $eventModel->getEventById($eventId);
 
+    try {
+        // Configuration du serveur SMTP
+        $mail->isSMTP();
+        $mail->Host = 'smtp.example.com'; // Remplacez par votre hôte SMTP
+        $mail->SMTPAuth = true;
+        $mail->Username = 'votre-email@example.com'; // Votre email
+        $mail->Password = 'votre-mot-de-passe'; // Votre mot de passe
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+
+        // Expéditeur et destinataire
+        $mail->setFrom('no-reply@example.com', 'Mon Application');
+        $mail->addAddress($user['email']); // Adresse de l'utilisateur
+
+        // Contenu de l'email
+        $mail->isHTML(true);
+        $mail->Subject = 'Inscription à un événement';
+        $mail->Body    = 'Bonjour ' . $user['username'] . ',<br><br>Vous êtes maintenant inscrit à l\'événement "' . $event['title'] . '" prévu le ' . $event['date'] . '.<br><br>Nous avons hâte de vous y voir !';
+
+        // Envoi de l'email
+        $mail->send();
+    } catch (Exception $e) {
+        echo "Erreur lors de l'envoi de l'email : {$mail->ErrorInfo}";
+    }
+
+}
     public function showMyEvents()
     {
         $this->checkSession();

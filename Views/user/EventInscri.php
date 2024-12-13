@@ -105,14 +105,16 @@ usort($events, function($a, $b) {
         <?php if (!empty($events)) : ?>
             <div class="d-flex flex-wrap justify-content-center">
                 <?php foreach ($events as $event) : ?>
-                    <div class="card" style="width: 18rem;">
-                        <img src="<?= htmlspecialchars($event['image']) ?>" class="card-img-top" alt="Image de l'événement">
-                        <div class="card-body">
-                            <h5 class="card-title"><?= htmlspecialchars($event['title']) ?></h5>
-                            <p class="card-text">Description : <?= htmlspecialchars($event['description']) ?></p>
-                            <p><strong>Date :</strong> <?= htmlspecialchars($event['date']) ?></p>
-                            <p><strong>Lieu :</strong> <?= htmlspecialchars($event['location']) ?></p>
-                            <p><strong>Catégorie :</strong> <?= htmlspecialchars($event['category']) ?></p>
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                        <img src="../<?php echo htmlspecialchars($event['image']); ?>" class="card-img-top img-fluid" alt="Événement">
+                            <div class="card-body">
+                                <h5 class="card-title"><?= htmlspecialchars($event['title']) ?></h5>
+                                <p class="card-text"><?= htmlspecialchars($event['description']) ?></p>
+                                <p><strong>Date :</strong> <?= htmlspecialchars($event['date']) ?></p>
+                                <p><strong>Lieu :</strong> <?= htmlspecialchars($event['location']) ?></p>
+                                <p><strong>Catégorie :</strong> <?= htmlspecialchars($event['category']) ?></p>
+                            </div>
                         </div>
                     </div>
                 <?php endforeach; ?>

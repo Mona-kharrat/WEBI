@@ -116,12 +116,28 @@ class EventModel
 
 public function registerUserForEvent($userId, $eventId)
 {
+    // Vérifier si l'utilisateur est déjà inscrit
+    $checkQuery = "SELECT COUNT(*) FROM user_events WHERE user_id = :userId AND event_id = :eventId";
+    $stmt = $this->db->prepare($checkQuery);
+    $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+    $stmt->bindParam(':eventId', $eventId, PDO::PARAM_INT);
+    $stmt->execute();
+    $count = $stmt->fetchColumn();
+
+    if ($count > 0) {
+        // Si l'utilisateur est déjà inscrit, retourner un message d'erreur ou une valeur
+        return false; // L'utilisateur est déjà inscrit
+    }
+
+    // Insérer l'utilisateur dans la table d'inscription
     $query = "INSERT INTO user_events (user_id, event_id) VALUES (:userId, :eventId)";
     $stmt = $this->db->prepare($query);
     $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
     $stmt->bindParam(':eventId', $eventId, PDO::PARAM_INT);
-    return $stmt->execute();
+    
+    return $stmt->execute(); 
 }
+
 
 public function isEventExists($eventId)
 {
@@ -160,25 +176,7 @@ public function getTotalEvents()
     return $stmt->fetchColumn();
 }
 
-    private function handleImageUpload($image)
-    {
-        if ($image && $image['error'] === UPLOAD_ERR_OK) {
-            $allowedExtensions = ['png', 'jpg', 'jpeg'];
-            $fileInfo = pathinfo($image['name']);
-            $fileExtension = strtolower($fileInfo['extension']);
 
-            if (in_array($fileExtension, $allowedExtensions)) {
-                $uploadDir = '../uploads/events/';
-                $uploadFile = $uploadDir . basename($image['name']);
-                move_uploaded_file($image['tmp_name'], $uploadFile);
-                return $uploadFile;
-            } else {
-                throw new Exception('Seules les images PNG, JPG et JPEG sont autorisées.');
-            }
-        } else {
-            throw new Exception('Une erreur est survenue lors du téléchargement de l\'image.');
-        }
-    }
     
 }
 ?>
