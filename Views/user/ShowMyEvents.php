@@ -18,7 +18,78 @@ $events = $eventModel->getUserEvents($userId);
     <title>Mes événements inscrits</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="Myevents.css">
+    <style>
+        .card {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+          header {
+            color: rgba(2, 77, 112, 0.85); /* même couleur que la navbar en gras */
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            font-weight: bold; /* Ajout de la mise en gras */
+            margin-top:60px;
+        }
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card-img-top {
+    height: 150px;
+    object-fit: cover;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #024d70;
+}
+
+.card-text {
+    margin: 10px 0;
+    color: #555;
+}
+
+.card .btn {
+    margin-left: auto;
+    margin-right: 5px;
+}
+
+.card .btn-sm {
+    font-size: 0.875rem;
+    padding: 5px 10px;
+}
+
+.card .btn-primary {
+    background-color: #0275d8;
+    border-color: #0275d8;
+}
+
+.card .btn-danger {
+    background-color: #d9534f;
+    border-color: #d9534f;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    border-top: 1px solid #ddd;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+    </style>
 
 </head>
 <body>
@@ -26,7 +97,9 @@ $events = $eventModel->getUserEvents($userId);
 
     <div id="navbar-container"></div> 
     <div class="container my-5">
-        <h2 class="mb-4">Mes événements inscrits</h2>
+        <header>
+        <h2>Mes événements inscrits</h2>
+        <header>
         <div class="row" id="eventsList">
             <?php
             if (!empty($events)) {
@@ -35,17 +108,7 @@ $events = $eventModel->getUserEvents($userId);
                     <div class="col-md-4 mb-4">
                         <div class="card h-100">
                         <img src="../uploads/<?php echo htmlspecialchars($event['image']); ?>" class="card-img-top" alt="Événement">
-                        <?php
-                        // Chemin relatif à partir de l'emplacement racine du serveur web
-                        $imagePath = "/WEBI/uploads/462542885_1071175761284936_6697102334352029722_n.jpg";
-
-                        // Vérification si le fichier existe
-                        if (file_exists($_SERVER['DOCUMENT_ROOT'] . $imagePath)) {
-                            echo '<img src="' . $imagePath . '" alt="Image" style="max-width:100%; height:50%;">';
-                        } else {
-                            echo '<p>Image introuvable.</p>';
-                        }
-                        ?>
+                        
                         <div class="card-body">
                                 <h5 class="card-title"><?php echo htmlspecialchars($event['title']); ?></h5>
                                 <p class="card-text">

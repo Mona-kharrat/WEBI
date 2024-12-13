@@ -96,18 +96,28 @@ public function updateEvent($title, $date, $location,$eventId,$userId) {
     $stmt = $this->db->prepare("UPDATE events SET title = ?, date = ?, location = ? WHERE id = ? AND user_id = ?");
     return $stmt->execute([$title, $date, $location, $eventId, $userId]);
 }
-    
+public function getAllEvents($page = 1, $limit = 6) 
+{
+    // Calculez la limite et le décalage pour pagination
+    $offset = ($page - 1) * $limit;
 
-    public function getAllEvents()
-    {
-        if (!isset($_SESSION['user']['id'])) {
-            return []; // Pas d'événements si non connecté
-        }
-
-        $stmt = $this->db->prepare("SELECT * FROM events");
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if (!isset($_SESSION['user']['id'])) {
+        return []; // Pas d'événements si non connecté
     }
+
+    $stmt = $this->db->prepare("SELECT * FROM events LIMIT :limit OFFSET :offset");
+    $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+    $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+public function getTotalEvents() 
+{
+    $stmt = $this->db->prepare("SELECT COUNT(*) FROM events");
+    $stmt->execute();
+    return $stmt->fetchColumn();
+}
 
     private function handleImageUpload($image)
     {

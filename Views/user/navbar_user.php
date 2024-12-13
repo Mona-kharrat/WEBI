@@ -4,19 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Navbar Moderne avec Masquage</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Inclus Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
     <style>
         /* Global styles */
         body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Poppins', sans-serif;
-            background-color: #f7f7f7;
-            height: 2000px; /* Juste pour permettre le défilement */
-        }
-
-        /* Navbar styles */
-    
+    margin: 0;
+    padding: 0;
+    padding-bottom: 100px; /* Ajuster la hauteur selon votre navbar */
+    font-family: 'Poppins', sans-serif;
+    background-color: #f7f7f7;
+    height: 2000px; /* Juste pour permettre le défilement */
+    }
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 50px;
+        background-color: rgba(2, 77, 112, 0.85); /* Blue background */
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 999;
+        transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+    .navbar-right {
+        display: flex;
+        gap: 30px; /* Espace entre les éléments */
+        margin-left: auto; /* Pousse le groupe à l'extrême droite */
+    }
 
         /* Navbar links container */
         .navbar-nav {
@@ -61,26 +80,6 @@
         .navbar.scrolled {
             background-color: rgba(0, 100, 200, 0.85); /* Changer la couleur au défilement */
         }
-        .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 50px;
-    background-color: rgba(2, 77, 112, 0.85); /* Blue background */
-    position: fixed;
-    width: 100%;
-    top: 0;
-    z-index: 999;
-    transition: transform 0.3s ease, background-color 0.3s ease;
-}
-
-.navbar-right {
-    display: flex;
-    gap: 30px; /* Espace entre les éléments */
-    margin-left: auto; /* Pousse le groupe à l'extrême droite */
-}
-
-
 
         /* Dropdown styles */
         .dropdown {
@@ -181,11 +180,12 @@
     <div class="dropdown">
         <a class="nav-link" href="#"><i class="fas fa-tools"></i> Gestion</a>
         <div class="dropdown-content">
-            <a class="dropdown-item" href="AddEvent.php"><i class="fas fa-calendar-plus"></i> Ajouter Évènement</a>
-            <a class="dropdown-item" href="ShowMyEvents.php"><i class="fas fa-calendar-check"></i> Mes Évènements crées</a>
-            <a class="dropdown-item" href="EventInscri.php"><i class="fas fa-calendar-check"></i> Mes Évènements inscrits</a>
+            <a class="dropdown-item" href="AddEvent.php"><i class="fas fa-calendar"></i> Ajouter Évènement</a>
+            <a class="dropdown-item" href="ShowMyEvents.php"><i class="fas fa-pencil-alt"></i> Mes Évènements crées</a>
+            <a class="dropdown-item" href="EventInscri.php"><i class="fas fa-check-circle"></i> Mes Évènements inscrits</a>
             <a class="dropdown-item" href="ShowAllEvents.php"><i class="fas fa-calendar-alt"></i> Autres Évènements</a>
         </div>
+
     </div>
     <div class="dropdown">
         <a class="nav-link" href="#"><i class="fas fa-cog"></i> Paramètres</a>
