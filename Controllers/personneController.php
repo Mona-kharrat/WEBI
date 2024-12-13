@@ -3,10 +3,10 @@
 require_once '../Models/personneModel.php';
 
 class AuthController {
-    private $userModel;
+    private $personneModel;
 
     public function __construct() {
-        $this->userModel = new UserModel();
+        $this->personneModel = new personneModel();
     }
 
     public function register() {
@@ -26,19 +26,19 @@ class AuthController {
             }
 
             // Vérification si l'utilisateur existe déjà
-            if ($this->userModel->userExists($email)) {
+            if ($this->personneModel->userExists($email)) {
                 $errors['email'] = "L'email existe déjà !";
             }
 
             // S'il n'y a pas d'erreurs, procédez à l'insertion
             if (empty($errors)) {
-                if ($this->userModel->insertUser($username, $email, $password)) {
+                if ($this->personneModel->insertUser($username, $email, $password)) {
                     // Enregistrez les informations de l'utilisateur dans la session après l'inscription
                     session_start();
                     $_SESSION['user'] = [
                         'username' => $username,
                         'email' => $email,
-                        'id' => $this->userModel->getUserIdByEmail($email) // Assurez-vous d'avoir une méthode pour récupérer l'ID
+                        'id' => $this->personneModel->getUserIdByEmail($email) // Assurez-vous d'avoir une méthode pour récupérer l'ID
                     ];
 
                     // Redirige vers la page de succès
@@ -82,7 +82,7 @@ class AuthController {
 
             // Si aucun champ n'est vide, on vérifie l'utilisateur
             if (empty($errors)) {
-                $user = $this->userModel->getUserByEmail($email);
+                $user = $this->personneModel->getUserByEmail($email);
 
                 // Vérification de l'utilisateur et du mot de passe
                 if ($user && password_verify($password, $user['password'])) {
@@ -112,14 +112,47 @@ class AuthController {
         header("Location: ../Views/authentification/Authentification.php");
         exit();
     }
+    public function showAllusers()
+    {
+        $this->checkSession();
+
+        $personneModel = new personneModel();
+        $users = $personneModel->getUsers();
+
+        if ($users) {
+            require_once '../Views/admin/gestion_user.php';
+        } else {
+            echo "Aucun user trouvé.";
+        }
+    }
+    public function blockUser($id) {
+        $personneModel = new personneModel();
+        $personneModel->blockUserById($id);  // Assurez-vous d'avoir une méthode dans le modèle pour gérer cela
+        header("Location: ../Views/admin/gestion_user.php");
+        exit();
+    }
+    
+    
 }
 
+
 // Déterminez l'action à effectuer
-$authController = new AuthController();
-if (isset($_GET['action']) && $_GET['action'] === 'login') {
-    $authController->login();
-} else {
-    $authController->register();
+if (isset($_GET['action'])) {
+    $controller = new AuthController();
+    switch ($_GET['action']) {
+        case 'login':
+            $controller->login();
+            break;
+        case 'register':
+            $controller->register();
+            break;
+        case 'showAllusers':
+            $controller->showAllusers();
+            break;
+        default:
+            echo "Action non valide.";
+            break;
+    }
 }
 
 ?>
