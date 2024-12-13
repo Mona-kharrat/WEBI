@@ -5,7 +5,7 @@ require_once '../Models/EventModel.php';
 
 class EventController
 {
-    // Vérifie si l'utilisateur est connecté
+    
     private function checkSession()
     {
         if (!isset($_SESSION['user']['id'])) {
@@ -112,7 +112,7 @@ class EventController
         public function register()
         {
             $this->checkSession();
-        
+            $userId = $_SESSION['user']['id'];
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $data = json_decode(file_get_contents('php://input'), true);
                 $eventId = $data['event_id'];
@@ -121,7 +121,7 @@ class EventController
                 $eventModel = new EventModel();
         
                 if ($eventModel->isEventExists($eventId)) {
-                    $eventModel->registerUserForEvent($eventId);
+                    $eventModel->registerUserForEvent($userId,$eventId);
                     echo "Inscription réussie!";
                 } else {
                     echo "Événement non trouvé.";
