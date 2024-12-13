@@ -1,7 +1,10 @@
 <?php
 session_start();
-
+require_once '../vendor/autoload.php';
 require_once '../Models/EventModel.php';
+use PHPMailer\PHPMailer\PHPMailer;
+
+
 
 class EventController
 {
@@ -109,7 +112,7 @@ class EventController
 }
 
     
-        public function register()
+public function register()
 {
     $this->checkSession();
     $userId = $_SESSION['user']['id'];
@@ -127,6 +130,9 @@ class EventController
                 $success = $eventModel->registerUserForEvent($userId, $eventId);
 
                 if ($success) {
+                    // Envoi de l'email de confirmation
+                    $this->sendEventRegistrationEmail($userId, $eventId);
+
                     echo json_encode(["message" => "Inscription réussie!"]);
                 } else {
                     echo json_encode(["message" => "Vous êtes déjà inscrit à cet événement."]);
@@ -142,7 +148,39 @@ class EventController
     }
 }
 
+private function sendEventRegistrationEmail($userId, $eventId) {
+    $mail = new PHPMailer(true);
+    $userModel = new UserModel();
+    $user = $userModel->getUserById($userId);
+    $eventModel = new EventModel();
+    $event = $eventModel->getEventById($eventId);
 
+    try {
+        // Configuration du serveur SMTP
+        $mail->isSMTP();
+        $mail->Host = 'smtp.example.com'; // Remplacez par votre hôte SMTP
+        $mail->SMTPAuth = true;
+        $mail->Username = 'votre-email@example.com'; // Votre email
+        $mail->Password = 'votre-mot-de-passe'; // Votre mot de passe
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+
+        // Expéditeur et destinataire
+        $mail->setFrom('no-reply@example.com', 'Mon Application');
+        $mail->addAddress($user['email']); // Adresse de l'utilisateur
+
+        // Contenu de l'email
+        $mail->isHTML(true);
+        $mail->Subject = 'Inscription à un événement';
+        $mail->Body    = 'Bonjour ' . $user['username'] . ',<br><br>Vous êtes maintenant inscrit à l\'événement "' . $event['title'] . '" prévu le ' . $event['date'] . '.<br><br>Nous avons hâte de vous y voir !';
+
+        // Envoi de l'email
+        $mail->send();
+    } catch (Exception $e) {
+        echo "Erreur lors de l'envoi de l'email : {$mail->ErrorInfo}";
+    }
+
+}
     public function showMyEvents()
     {
         $this->checkSession();

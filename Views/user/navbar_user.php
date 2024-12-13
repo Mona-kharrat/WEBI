@@ -175,7 +175,7 @@
 
 <!-- Navbar -->
 <nav class="navbar">
-    <a class="navbar-brand" href="index.php"><i class="fas fa-home"></i> WEBI</a>
+    <a class="navbar-brand" href="../../index.php"><i class="fas fa-home"></i> WEBI</a>
     <div class="navbar-right">
     <div class="dropdown">
         <a class="nav-link" href="#"><i class="fas fa-tools"></i> Gestion</a>

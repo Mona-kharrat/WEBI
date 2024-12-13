@@ -28,54 +28,86 @@ usort($events, function($a, $b) {
             color: #333;
             background-color: #f8f9fa;
         }
+
         header {
-            color: rgba(2, 77, 112, 0.85); /* même couleur que la navbar en gras */
+            color: rgba(2, 77, 112, 0.85);
             padding: 2rem;
             text-align: center;
             position: relative;
-            font-weight: bold; /* Ajout de la mise en gras */
-            margin-top:60px;
+            font-weight: bold;
+            margin-top: 60px;
         }
 
         .card {
             border-radius: 15px;
-            transition: transform 0.3s ease-in-out;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
+            background-color: #ffffff;
+            overflow: hidden;
         }
+
         .card:hover {
             transform: translateY(-10px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
         }
+
         .card-img-top {
             border-top-left-radius: 15px;
             border-top-right-radius: 15px;
+            height: 200px;
+            object-fit: cover;
         }
+
         .card-body {
             padding: 1.5rem;
             text-align: left;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
+
         .card-title {
             font-size: 1.25rem;
             font-weight: bold;
+            margin-bottom: 10px;
+            color: #025074;
         }
+
         .card-text {
             font-size: 1rem;
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .card p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        .card p strong {
+            color: #333;
+        }
+
+        .d-flex {
+            gap: 20px;
         }
     </style>
 </head>
 <body>
-    <div id="navbar-container"></div> 
+    <div id="navbar-container"></div>
 
     <header>
         <h1>Mes Événements Inscrits</h1>
     </header>
     <main class="container mt-5">
         <?php if (!empty($events)) : ?>
-            <div class="row">
+            <div class="d-flex flex-wrap justify-content-center">
                 <?php foreach ($events as $event) : ?>
                     <div class="col-md-4 mb-4">
                         <div class="card">
-                        <img src="../<?php echo htmlspecialchars($event['image']); ?>" class="card-img-top" alt="Événement">
+                        <img src="../<?php echo htmlspecialchars($event['image']); ?>" class="card-img-top img-fluid" alt="Événement">
                             <div class="card-body">
                                 <h5 class="card-title"><?= htmlspecialchars($event['title']) ?></h5>
                                 <p class="card-text"><?= htmlspecialchars($event['description']) ?></p>
@@ -88,7 +120,7 @@ usort($events, function($a, $b) {
                 <?php endforeach; ?>
             </div>
         <?php else : ?>
-            <p>Aucun événement trouvé.</p>
+            <p class="text-center">Aucun événement trouvé.</p>
         <?php endif; ?>
     </main>
 
@@ -99,6 +131,7 @@ usort($events, function($a, $b) {
                 document.getElementById('navbar-container').innerHTML = data;
             })
             .catch(error => console.log('Erreur lors du chargement de la navbar:', error));
+
     </script>
 </body>
 </html>

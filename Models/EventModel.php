@@ -120,6 +120,7 @@ public function updateEvent($title, $date, $location,$eventId,$userId) {
     $stmt = $this->db->prepare("UPDATE events SET title = ?, date = ?, location = ? WHERE id = ? AND user_id = ?");
     return $stmt->execute([$title, $date, $location, $eventId, $userId]);
 }
+//nav pagination
 public function getAllEvents($page = 1, $limit = 6) 
 {
     // Calculez la limite et le décalage pour pagination
@@ -135,6 +136,7 @@ public function getAllEvents($page = 1, $limit = 6)
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+//nav pagination
 
 public function getTotalEvents() 
 {
@@ -143,25 +145,13 @@ public function getTotalEvents()
     return $stmt->fetchColumn();
 }
 
-    private function handleImageUpload($image)
-    {
-        if ($image && $image['error'] === UPLOAD_ERR_OK) {
-            $allowedExtensions = ['png', 'jpg', 'jpeg'];
-            $fileInfo = pathinfo($image['name']);
-            $fileExtension = strtolower($fileInfo['extension']);
-
-            if (in_array($fileExtension, $allowedExtensions)) {
-                $uploadDir = '../uploads/events/';
-                $uploadFile = $uploadDir . basename($image['name']);
-                move_uploaded_file($image['tmp_name'], $uploadFile);
-                return $uploadFile;
-            } else {
-                throw new Exception('Seules les images PNG, JPG et JPEG sont autorisées.');
-            }
-        } else {
-            throw new Exception('Une erreur est survenue lors du téléchargement de l\'image.');
-        }
-    }
+public function getEventById($eventId)
+{
+    $stmt = $this->db->prepare("SELECT * FROM events WHERE id = :id");
+    $stmt->bindParam(':id', $eventId, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
     
 }
 ?>
