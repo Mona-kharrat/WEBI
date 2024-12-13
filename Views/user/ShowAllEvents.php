@@ -81,6 +81,7 @@ $totalPages = ceil($totalEvents / $limit);
     </div>
 
     <nav>
+        <!--nav pagination-->
         <ul class="pagination">
             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                 <li class="page-item <?php if ($i === $page) echo 'active'; ?>">

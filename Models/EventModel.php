@@ -96,6 +96,7 @@ public function updateEvent($title, $date, $location,$eventId,$userId) {
     $stmt = $this->db->prepare("UPDATE events SET title = ?, date = ?, location = ? WHERE id = ? AND user_id = ?");
     return $stmt->execute([$title, $date, $location, $eventId, $userId]);
 }
+//nav pagination
 public function getAllEvents($page = 1, $limit = 6) 
 {
     // Calculez la limite et le décalage pour pagination
@@ -111,6 +112,7 @@ public function getAllEvents($page = 1, $limit = 6)
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+//nav pagination
 
 public function getTotalEvents() 
 {
