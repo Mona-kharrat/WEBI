@@ -2,6 +2,7 @@
 require_once '../vendor/autoload.php'; 
 require_once '../Models/personneModel.php';
 use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 class AuthController {
     private $personneModel;
 
@@ -96,18 +97,24 @@ class AuthController {
             $mail->Host = 'smtp.gmail.com';  // Hôte SMTP de Gmail
             $mail->SMTPAuth = true;  // Activer l'authentification SMTP
             $mail->Username = 'mariembouaziz.mb@gmail.com';  // Votre adresse Gmail
-            $mail->Password = 'Mar40720Ad';  // Votre mot de passe Gmail ou un mot de passe d'application
+            $mail->Password = 'zdpp fkhk awkc cvsu';  // Votre mot de passe Gmail ou un mot de passe d'application
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;  // Utiliser STARTTLS pour sécuriser la connexion
             $mail->Port = 587;  // Le port SMTP de Gmail pour STARTTLS
     
             // Expéditeur et destinataire
-            $mail->setFrom('mariembouaziz.mb@gmail.com', 'Mon Application');
-            $mail->addAddress($email, $username);  // Adresse email du destinataire
+            $mail->setFrom('no-reply@example.com', 'WEBI');
+            $mail->addAddress($email, $username);  
     
             // Contenu de l'email
             $mail->isHTML(true);  // Envoi d'email au format HTML
-            $mail->Subject = 'Inscription à l\'événement';
-            $mail->Body = 'Bonjour, vous êtes inscrit à un événement.';
+            $mail->Subject = 'Bienvenue sur WEBI - Votre compte a été créé avec succès';
+            $mail->Body = 'Bonjour ' . $username . ',<br><br>
+            Nous sommes ravis de vous informer que votre compte a été créé avec succès sur <strong>WEBI</strong>. Vous pouvez désormais accéder à votre espace personnel et profiter de tous nos services.<br><br>
+            Si vous avez des questions ou besoin d\'assistance, n\'hésitez pas à nous contacter à tout moment.<br><br>
+            Merci de faire partie de notre communauté.<br><br>
+            Cordialement,<br>
+            L\'équipe WEBI';
+            
     
             // Envoi de l'email
             if($mail->send()) {
@@ -164,7 +171,7 @@ class AuthController {
                         exit();
                     } else {
                         // Redirection vers la page des événements de l'utilisateur
-                        header("Location: ../Views/user/ShowMyEvents.php");
+                        header("Location: ../Views/user/ShowAllEvents.php");
                         exit();
                     }
                 } else {

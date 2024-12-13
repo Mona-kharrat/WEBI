@@ -3,6 +3,7 @@ session_start();
 require_once '../vendor/autoload.php';
 require_once '../Models/EventModel.php';
 use PHPMailer\PHPMailer\PHPMailer;
+require_once '../Models/PersonneModel.php';
 
 
 
@@ -157,17 +158,17 @@ private function sendEventRegistrationEmail($userId, $eventId) {
 
     try {
         // Configuration du serveur SMTP
-        $mail->isSMTP();
-        $mail->Host = 'smtp.example.com'; // Remplacez par votre hôte SMTP
-        $mail->SMTPAuth = true;
-        $mail->Username = 'votre-email@example.com'; // Votre email
-        $mail->Password = 'votre-mot-de-passe'; // Votre mot de passe
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port = 587;
-
-        // Expéditeur et destinataire
-        $mail->setFrom('no-reply@example.com', 'Mon Application');
-        $mail->addAddress($user['email']); // Adresse de l'utilisateur
+        $mail->isSMTP();  // Utiliser SMTP
+            $mail->Host = 'smtp.gmail.com';  // Hôte SMTP de Gmail
+            $mail->SMTPAuth = true;  // Activer l'authentification SMTP
+            $mail->Username = 'mariembouaziz.mb@gmail.com';  // Votre adresse Gmail
+            $mail->Password = 'zdpp fkhk awkc cvsu';  // Votre mot de passe Gmail ou un mot de passe d'application
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;  // Utiliser STARTTLS pour sécuriser la connexion
+            $mail->Port = 587;  // Le port SMTP de Gmail pour STARTTLS
+    
+            // Expéditeur et destinataire
+            $mail->setFrom('no-reply@example.com', 'WEBI');
+            $mail->addAddress($user['email'], $user['username']);  
 
         // Contenu de l'email
         $mail->isHTML(true);

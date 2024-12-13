@@ -9,9 +9,9 @@ $limit = 6;
 
 // Récupérer la page actuelle ou utiliser 1 par défaut
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-
-// Obtenir les événements paginés
-$events = $eventModel->getAllEvents($page, $limit);
+$location = isset($_GET['location']) ? $_GET['location'] : null;
+$date = isset($_GET['date']) ? $_GET['date'] : null;
+$events = $eventModel->getAllEvents($page, $limit, $location, $date);
 
 // Calcul du nombre total d'événements
 $totalEvents = $eventModel->getTotalEvents(); // Méthode ajoutée pour obtenir le nombre total d'événements
@@ -80,6 +80,24 @@ $totalPages = ceil($totalEvents / $limit);
             <h1 class="mb-4">Explorer les Événements</h1>
         </header>
 
+        <!-- Formulaire de filtrage -->
+        <form method="GET" action="">
+            <div class="form-row mb-4">
+                <div class="col-md-4">
+                    <label for="location">Lieu</label>
+                    <input type="text" id="location" name="location" class="form-control" value="<?php echo isset($_GET['location']) ? htmlspecialchars($_GET['location']) : ''; ?>">
+                </div>
+                <div class="col-md-4">
+                    <label for="date">Date</label>
+                    <input type="date" id="date" name="date" class="form-control" value="<?php echo isset($_GET['date']) ? htmlspecialchars($_GET['date']) : ''; ?>">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary">Filtrer</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Affichage des événements -->
         <div class="d-flex flex-wrap justify-content-center" id="eventsList">
             <?php if (!empty($events)): ?>
                 <?php foreach ($events as $event): ?>
@@ -107,18 +125,20 @@ $totalPages = ceil($totalEvents / $limit);
         </div>
     </div>
 
+    <!-- Pagination -->
     <nav>
-    <ul class="pagination">
-        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-            <li class="page-item <?php echo ($i === $page) ? 'active' : ''; ?>">
-                <a class="page-link" href="javascript:void(0)" data-page="<?php echo $i; ?>"><?php echo $i; ?></a>
-            </li>
-        <?php endfor; ?>
-    </ul>
-</nav>
+        <ul class="pagination">
+            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <li class="page-item <?php echo ($i === $page) ? 'active' : ''; ?>">
+                    <a class="page-link" href="javascript:void(0)" data-page="<?php echo $i; ?>"><?php echo $i; ?></a>
+                </li>
+            <?php endfor; ?>
+        </ul>
+    </nav>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Gestion de l'inscription aux événements et de la pagination
         document.addEventListener('DOMContentLoaded', function() {
             const registerButtons = document.querySelectorAll('.register-btn');
 
@@ -163,42 +183,43 @@ $totalPages = ceil($totalEvents / $limit);
                 .catch(error => console.error('Erreur lors de l\'inscription :', error));
             });
         });
+
+        // Chargement des événements et pagination
         document.addEventListener('DOMContentLoaded', function () {
-    function loadEvents(page) {
-        fetch(`?page=${page}`)
-            .then(response => response.text())
-            .then(data => {
-                const parser = new DOMParser();
-                const newDoc = parser.parseFromString(data, 'text/html');
+            function loadEvents(page) {
+                fetch(`?page=${page}`)
+                    .then(response => response.text())
+                    .then(data => {
+                        const parser = new DOMParser();
+                        const newDoc = parser.parseFromString(data, 'text/html');
 
-                // Mise à jour de la liste d'événements
-                const newEvents = newDoc.querySelectorAll('#eventsList .card');
-                const eventsList = document.getElementById('eventsList');
-                eventsList.innerHTML = ''; // Réinitialisation
-                newEvents.forEach(event => eventsList.appendChild(event));
+                        // Mise à jour de la liste d'événements
+                        const newEvents = newDoc.querySelectorAll('#eventsList .card');
+                        const eventsList = document.getElementById('eventsList');
+                        eventsList.innerHTML = ''; // Réinitialisation
+                        newEvents.forEach(event => eventsList.appendChild(event));
 
-                // Mise à jour de la pagination
-                const newPagination = newDoc.querySelector('.pagination');
-                const pagination = document.querySelector('.pagination');
-                pagination.innerHTML = newPagination.innerHTML;
-                attachPaginationEvents(); // Réattacher les événements
-            })
-            .catch(error => console.error('Erreur lors du chargement des événements :', error));
-    }
+                        // Mise à jour de la pagination
+                        const newPagination = newDoc.querySelector('.pagination');
+                        const pagination = document.querySelector('.pagination');
+                        pagination.innerHTML = newPagination.innerHTML;
+                        attachPaginationEvents(); // Réattacher les événements
+                    })
+                    .catch(error => console.error('Erreur lors du chargement des événements :', error));
+            }
 
-    function attachPaginationEvents() {
-        document.querySelectorAll('.page-link').forEach(link => {
-            link.addEventListener('click', function (e) {
-                e.preventDefault();
-                const page = this.getAttribute('data-page');
-                loadEvents(page); // Charger la page sélectionnée
-            });
+            function attachPaginationEvents() {
+                document.querySelectorAll('.page-link').forEach(link => {
+                    link.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        const page = this.getAttribute('data-page');
+                        loadEvents(page); // Charger la page sélectionnée
+                    });
+                });
+            }
+
+            attachPaginationEvents(); // Initialiser les événements au chargement de la page
         });
-    }
-
-    attachPaginationEvents(); // Initialiser les événements au chargement de la page
-});
-
     </script>
 </body>
 </html>

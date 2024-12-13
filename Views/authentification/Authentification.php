@@ -29,9 +29,9 @@
                     session_unset();
                     ?>
 
-                    <?php if (!empty($errors['general'])) : ?>
-                        <div class="alert alert-danger"><?php echo htmlspecialchars($errors['general']); ?></div>
-                    <?php endif; ?>
+<?php if (!empty($errors['general'])) : ?>
+    <div class="alert alert-danger"><?php echo htmlspecialchars($errors['general']); ?></div>
+<?php endif; ?>
 
                     <form id="loginForm" method="POST" action="\webi\Controllers\personneController.php?action=login">
                         <div class="mb-3">

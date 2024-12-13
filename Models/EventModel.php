@@ -152,21 +152,52 @@ public function updateEvent($title, $date, $location,$eventId,$userId) {
     return $stmt->execute([$title, $date, $location, $eventId, $userId]);
 }
 //nav pagination
-public function getAllEvents($page = 1, $limit = 6) 
+public function getAllEvents($page = 1, $limit = 6, $location = null, $date = null) 
 {
-    // Calculez la limite et le décalage pour pagination
+    // Calculez la limite et le décalage pour la pagination
     $offset = ($page - 1) * $limit;
 
     if (!isset($_SESSION['user']['id'])) {
         return []; // Pas d'événements si non connecté
     }
 
-    $stmt = $this->db->prepare("SELECT * FROM events LIMIT :limit OFFSET :offset");
+    // Construire la requête de base
+    $sql = "SELECT * FROM events WHERE 1=1";
+
+    // Ajouter des conditions de filtre si des valeurs sont passées
+    if ($location) {
+        $sql .= " AND location LIKE :location";
+    }
+
+    if ($date) {
+        $sql .= " AND date = :date";
+    }
+
+    // Ajouter la pagination à la requête
+    $sql .= " LIMIT :limit OFFSET :offset";
+
+    // Préparer la requête
+    $stmt = $this->db->prepare($sql);
+
+    // Lier les paramètres de filtre si nécessaires
+    if ($location) {
+        $stmt->bindValue(':location', '%' . $location . '%');
+    }
+
+    if ($date) {
+        $stmt->bindValue(':date', $date);
+    }
+
+    // Lier les paramètres de pagination
     $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
     $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+
+    // Exécuter la requête
     $stmt->execute();
+
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
 //nav pagination
 
 public function getTotalEvents() 
