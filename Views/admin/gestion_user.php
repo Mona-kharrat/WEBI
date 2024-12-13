@@ -63,11 +63,11 @@ $totalPages = ceil($totalUsers / $limit);
         <thead class="table-dark">
         <tr>
             <th>#</th>
-            <th>Nom</th>
-            <th>Email</th>
-            <th>Rôle</th>
-            <th>Créé le</th>
-            <th>Actions</th>
+            <th>nom</th>
+            <th>email</th>
+            <th>role</th>
+            <th>created_at</th>
+            <th>action</th>
         </tr>
         </thead>
         <tbody>
@@ -78,9 +78,16 @@ $totalPages = ceil($totalUsers / $limit);
                     <td><?php echo htmlspecialchars($user['username']); ?></td>
                     <td><?php echo htmlspecialchars($user['email']); ?></td>
                     <td><?php echo htmlspecialchars($user['role']); ?></td>
+
                     <td><?php echo htmlspecialchars($user['created_at']); ?></td>
                     <td class="action-btns">
-                        <button class="btn btn-danger btn-sm delete-btn" data-id="<?php echo htmlspecialchars($user['id']); ?>">
+                        <button class="btn btn-danger btn-sm validate-btn" data-id="<?php echo htmlspecialchars($user['id']); ?>">
+                        <i class="fas fa-ban"></i> 
+                        </button>
+                        <button  class="btn btn-success btn-sm moderate-btn" data-id="<?php echo htmlspecialchars($user['id']); ?>">
+                        <i class="fas fa-unlock"></i> 
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm delete-btn" data-id="<?php echo htmlspecialchars($user['id']); ?>">
                             <i class="fas fa-trash"></i> 
                         </button>
                         <button class="btn btn-warning btn-sm update-btn" data-bs-toggle="modal" data-bs-target="#editModal<?php echo htmlspecialchars($user['id']); ?>">
@@ -149,11 +156,12 @@ $totalPages = ceil($totalUsers / $limit);
     document.querySelectorAll('.delete-btn').forEach(button => {
         button.addEventListener('click', function () {
             const userId = this.getAttribute('data-id');
-            if (confirm('Voulez-vous supprimer cet utilisateur ?')) {
-                window.location.href = `../../Controllers/personneController.php?action=deleteAdmin&id=${userId}`;
+            if (confirm('Voulez-vous supprimer cet user ?')) {
+                window.location.href = `../../Controllers/userController.php?action=deleteAdmin&id=${userId}`;
             }
         });
     });
 </script>
+
 </body>
 </html>

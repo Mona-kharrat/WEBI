@@ -40,7 +40,13 @@ class personneModel {
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
         
-    
+        public function updateUser($role, $userId) {
+            $stmt = $this->db->getConnection()->prepare("UPDATE personnes SET role = ? WHERE id = ?");
+            if (!$stmt->execute([$role, $userId])) {
+                throw new Exception("Erreur lors de la mise à jour : " . implode(", ", $stmt->errorInfo()));
+            }
+        }
+        
     // Insertion d'un utilisateur
     public function insertUser($username, $email, $password) {
         // Préparer la requête d'insertion
@@ -92,6 +98,37 @@ class personneModel {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result ? $result['id'] : null;
     }
+    public function blockUser($userId) {
+        // Préparer la requête pour bloquer l'utilisateur
+        $stmt = $this->db->getConnection()->prepare(
+            "UPDATE personnes SET status = 1 WHERE id = :id"
+        );
+        $stmt->bindParam(':id', $userId, PDO::PARAM_INT);
+        
+        // Exécuter la requête et retourner le résultat
+        return $stmt->execute();
+    }
+    public function unblockUser($userId) {
+        // Préparer la requête pour débloquer l'utilisateur
+        $stmt = $this->db->getConnection()->prepare(
+            "UPDATE personnes SET status = 0 WHERE id = :id"
+        );
+        $stmt->bindParam(':id', $userId, PDO::PARAM_INT);
+        
+        // Exécuter la requête et retourner le résultat
+        return $stmt->execute();
+    }
+    public function deleteUser($userId) {
+        // Préparer la requête pour débloquer l'utilisateur
+        $stmt = $this->db->getConnection()->prepare(
+            "DELETE FROM personnes WHERE id = :id"
+        );
+        $stmt->bindParam(':id', $userId, PDO::PARAM_INT);
+        
+        // Exécuter la requête et retourner le résultat
+        return $stmt->execute();
+    }
+        
 }
 
 ?>
