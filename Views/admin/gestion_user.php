@@ -5,7 +5,7 @@ require_once '../../Models/personneModel.php';
 $personneModel = new personneModel();
 
 // Configuration de la pagination
-$limit = 10;  // Nombre d'utilisateurs par page
+$limit = 6;  // Nombre d'utilisateurs par page
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
@@ -70,14 +70,14 @@ $totalPages = ceil($totalUsers / $limit);
 
                     <td><?php echo htmlspecialchars($user['created_at']); ?></td>
                     <td class="action-btns">
-                        <button class="btn btn-success btn-sm validate-btn" data-id="<?php echo htmlspecialchars($user['id']); ?>">
-                            <i class="fas fa-check"></i> Valider
+                        <button class="btn btn-danger btn-sm validate-btn" data-id="<?php echo htmlspecialchars($user['id']); ?>">
+                        <i class="fas fa-ban"></i> 
                         </button>
-                        <button class="btn btn-warning btn-sm moderate-btn" data-id="<?php echo htmlspecialchars($user['id']); ?>">
-                            <i class="fas fa-edit"></i> Modérer
+                        <button  class="btn btn-success btn-sm moderate-btn" data-id="<?php echo htmlspecialchars($user['id']); ?>">
+                        <i class="fas fa-unlock"></i> 
                         </button>
-                        <button class="btn btn-danger btn-sm delete-btn" data-id="<?php echo htmlspecialchars($user['id']); ?>">
-                            <i class="fas fa-trash"></i> Supprimer
+                        <button class="btn btn-outline-danger btn-sm delete-btn" data-id="<?php echo htmlspecialchars($user['id']); ?>">
+                            <i class="fas fa-trash"></i> 
                         </button>
                     </td>
                 </tr>
