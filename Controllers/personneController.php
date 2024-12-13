@@ -5,16 +5,16 @@ use PHPMailer\PHPMailer\PHPMailer;
 class AuthController {
     private $personneModel;
 
+
     public function __construct() {
         $this->personneModel = new personneModel();
     }
-
+    
     public function register() {
         // Initialisation du tableau des erreurs
         $errors = [];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-           
             // Récupération des données du formulaire
             $username = trim($_POST['username']);
             $email = trim($_POST['email']);
@@ -42,10 +42,6 @@ class AuthController {
                         'id' => $this->personneModel->getUserIdByEmail($email) // Assurez-vous d'avoir une méthode pour récupérer l'ID
                     ];
 
-                    
-
-                    $this->sendConfirmationEmail($email,$username);
-
                     // Redirige vers la page de succès
                     header("Location: ../Views/user/ShowMyEvents.php");
                     exit();
@@ -68,45 +64,6 @@ class AuthController {
         exit();
     }
 
-    private function sendConfirmationEmail($email, $username) {
-        echo "<script>console.log('Test : Envoi de l\'email échoué');</script>";
-
-        $mail = new PHPMailer(true);
-        try {
-            // Configuration du serveur SMTP
-            $mail->isSMTP();  // Utiliser SMTP
-            $mail->Host = 'smtp.gmail.com';  // Hôte SMTP de Gmail
-            $mail->SMTPAuth = true;  // Activer l'authentification SMTP
-            $mail->Username = 'mariembouaziz.mb@gmail.com';  // Votre adresse Gmail
-            $mail->Password = 'Mar40720Ad';  // Votre mot de passe Gmail ou un mot de passe d'application
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;  // Utiliser STARTTLS pour sécuriser la connexion
-            $mail->Port = 587;  // Le port SMTP de Gmail pour STARTTLS
-    
-            // Expéditeur et destinataire
-            $mail->setFrom('mariembouaziz.mb@gmail.com', 'Mon Application');
-            $mail->addAddress($email, $username);  // Adresse email du destinataire
-    
-            // Contenu de l'email
-            $mail->isHTML(true);  // Envoi d'email au format HTML
-            $mail->Subject = 'Inscription à l\'événement';
-            $mail->Body = 'Bonjour, vous êtes inscrit à un événement.';
-    
-            // Envoi de l'email
-            if($mail->send()) {
-                echo 'Message envoyé avec succès.';
-            } else {
-                // Envoyer l'erreur à la console JavaScript
-                echo "<script>alert('Erreur lors de l\'envoi de l\'email : " . $mail->ErrorInfo . "');</script>";
-
-            }
-        } catch (Exception $e) {
-            // Envoyer l'erreur à la console JavaScript
-            echo "<script>alert('Erreur lors de l\'envoi de l\'email : " . $mail->ErrorInfo . "');</script>";
-
-        }
-    }
-    
-    
     public function login() {
         // Initialisation du tableau des erreurs
         $errors = [];
@@ -156,14 +113,84 @@ class AuthController {
         header("Location: ../Views/authentification/Authentification.php");
         exit();
     }
-}
+    public function showAllusers()
+    {
+        $this->checkSession();
+
+        $personneModel = new personneModel();
+        $users = $personneModel->getUsers();
+
+        if ($users) {
+            require_once '../Views/admin/gestion_user.php';
+        } else {
+            echo "Aucun user trouvé.";
+        }
+    }
+    public function blockUser($id) {
+        $personneModel = new personneModel();
+        $personneModel->blockUserById($id);  // Assurez-vous d'avoir une méthode dans le modèle pour gérer cela
+        header("Location: ../Views/admin/gestion_user.php");
+        exit();
+    }
+        
+    public function update()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user_id'])) {
+            $role = $_POST['role'];
+            $userId = $_POST['user_id'];
+    
+            // Validation du formulaire
+            $user_errors = $this->validateForm($role);
+    
+            // Si pas d'erreur, mise à jour de l'utilisateur
+            if (empty($user_errors)) {
+                $personneModel = new personneModel();
+                $personneModel->updateUser($role, $userId);
+    
+                $_SESSION['message'] = "Le rôle de l'utilisateur a été modifié avec succès.";
+                header('Location: ../Views/admin/gestion_user.php');
+                exit();
+            } else {
+                $_SESSION['user_errors'] = $user_errors;
+                $_SESSION['formData'] = compact('role');
+                header('Location: ../Views/admin/gestion_user.php');
+                exit();
+            }
+        }
+    }
+    
+    private function validateForm($role)
+    {
+        $user_errors = [];
+    
+        if (empty($role)) {
+            $user_errors[] = "Le rôle est requis.";
+        }
+    
+        return $user_errors;
+    }
+}    
 
 // Déterminez l'action à effectuer
-$authController = new AuthController();
-if (isset($_GET['action']) && $_GET['action'] === 'login') {
-    $authController->login();
-} else {
-    $authController->register();
+if (isset($_GET['action'])) {
+    $controller = new AuthController();
+    switch ($_GET['action']) {
+        case 'login':
+            $controller->login();
+            break;
+        case 'register':
+            $controller->register();
+            break;
+        case 'showAllusers':
+            $controller->showAllusers();
+            break;
+            case 'update':
+                $controller->update();
+                break;
+        default:
+            echo "Action non valide.";
+            break;
+    }
 }
 
 ?>

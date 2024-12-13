@@ -9,6 +9,12 @@ class personneModel {
         $this->db = new Database();  // Connexion à la base de données
     }
 
+    public function updateUser($role, $userId) {
+        $stmt = $this->db->getConnection()->prepare("UPDATE personnes SET role = ? WHERE id = ?");
+        if (!$stmt->execute([$role, $userId])) {
+            throw new Exception("Erreur lors de la mise à jour : " . implode(", ", $stmt->errorInfo()));
+        }
+    }
     
     public function getTotalUsersCount() 
 {
