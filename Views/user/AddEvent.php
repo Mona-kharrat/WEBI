@@ -3,7 +3,7 @@ session_start();
 
 // Vérification de la session utilisateur
 if (!isset($_SESSION['user']['id'])) {
-    header("Location: ../authentification\Authentification.php");
+    header("Location: ../authentification/Authentification.php");
     exit();
 }
 

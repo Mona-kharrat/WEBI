@@ -15,7 +15,46 @@ class personneModel {
             throw new Exception("Erreur lors de la mise à jour : " . implode(", ", $stmt->errorInfo()));
         }
     }
+     /////////////////password ////////////
+     public function resetPassword($email, $newPassword) {
+        // Récupérer l'utilisateur par son email
+        $user = $this->getUserByEmail($email);
+        if (!$user) {
+            throw new Exception("Aucun utilisateur trouvé avec cet email.");
+        }
     
+        // Hachage du nouveau mot de passe
+        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+    
+        // Préparer la requête de mise à jour du mot de passe
+        $stmt = $this->db->getConnection()->prepare(
+            "UPDATE personnes SET password = :password WHERE email = :email"
+        );
+        $stmt->bindParam(':password', $hashedPassword);
+        $stmt->bindParam(':email', $email);
+    
+        // Exécuter la requête
+        return $stmt->execute();
+    }
+    
+    public function deleteEventById($eventId, $userId)
+    {
+        try {
+            // Préparer la requête de suppression
+            $query = "DELETE FROM events WHERE id = :id AND user_id = :user_id";
+            $stmt = $this->db->prepare($query);
+
+            // Lier les paramètres
+            $stmt->bindParam(':id', $eventId, PDO::PARAM_INT);
+            $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+
+            // Exécuter la requête
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la suppression de l'événement : " . $e->getMessage());
+            return false;
+        }
+    }
     public function getTotalUsersCount() 
 {
     $stmt = $this->db->getConnection()->prepare("SELECT COUNT(*) FROM personnes");
@@ -38,13 +77,6 @@ class personneModel {
             $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        }
-        
-        public function updateUser($role, $userId) {
-            $stmt = $this->db->getConnection()->prepare("UPDATE personnes SET role = ? WHERE id = ?");
-            if (!$stmt->execute([$role, $userId])) {
-                throw new Exception("Erreur lors de la mise à jour : " . implode(", ", $stmt->errorInfo()));
-            }
         }
         
     // Insertion d'un utilisateur
@@ -128,6 +160,35 @@ class personneModel {
         // Exécuter la requête et retourner le résultat
         return $stmt->execute();
     }
+    public function updateUserProfile($userId, $username, $email) {
+        $stmt = $this->db->getConnection()->prepare(
+            "UPDATE personnes SET username = :username, email = :email WHERE id = :id"
+        );
+        $stmt->bindParam(':username', $username);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':id', $userId, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    public function getEventCountByUser($userId) {
+        $stmt = $this->db->getConnection()->prepare(
+            "SELECT COUNT(*) FROM events WHERE user_id = :userId"
+        );
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+    
+    
+    public function getEventRegistrationsCount($userId) {
+        $stmt = $this->db->getConnection()->prepare(
+            "SELECT COUNT(*) FROM user_events WHERE user_id = :userId"
+        );
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+    
         
 }
 

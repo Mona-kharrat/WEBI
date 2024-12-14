@@ -31,7 +31,7 @@ $events = $eventModel->getUserEvents($userId);
         text-align: center;
         position: relative;
         font-weight: bold; /* Ajout de la mise en gras */
-        margin-top:60px;
+        margin-top:50px;
     }
     .card:hover {
         transform: translateY(-5px);

@@ -1,3 +1,8 @@
+<?php
+session_start();
+$userId = $_SESSION['user']['id'];
+$username = $_SESSION['user']['username'];
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -154,6 +159,15 @@
         .dropdown-item:hover::before {
             left: 0;
         }
+        .fas.fa-circle.text-success {
+    color: #28a745; /* Couleur verte pour le point */
+    margin-right: 5px; /* Espacement entre le point et le texte */
+}
+/* Styles pour l'icône et le point vert */
+.fas.fa-circle.text-success {
+    color: #28a745; /* Couleur verte pour le point */
+    margin-right: 5px; /* Espacement entre le point et le texte */
+}
 
         /* Media query for responsiveness */
         @media (max-width: 768px) {
@@ -177,26 +191,32 @@
 <nav class="navbar">
     <a class="navbar-brand" href="../../index.php"><i class="fas fa-home"></i> WEBI</a>
     <div class="navbar-right">
-    <div class="dropdown">
-        <a class="nav-link" href="#"><i class="fas fa-tools"></i> Gestion</a>
-        <div class="dropdown-content">
-            <a class="dropdown-item" href="AddEvent.php"><i class="fas fa-calendar"></i> Ajouter Évènement</a>
-            <a class="dropdown-item" href="ShowMyEvents.php"><i class="fas fa-pencil-alt"></i> Mes Évènements crées</a>
-            <a class="dropdown-item" href="EventInscri.php"><i class="fas fa-check-circle"></i> Mes Évènements inscrits</a>
-            <a class="dropdown-item" href="ShowAllEvents.php"><i class="fas fa-calendar-alt"></i> Autres Évènements</a>
-        </div>
+        <div class="dropdown">
+            <a class="nav-link" href="#"><i class="fas fa-tools"></i> Gestion</a>
+                <div class="dropdown-content">
+                    <a class="dropdown-item" href="AddEvent.php"><i class="fas fa-calendar"></i> Ajouter Évènement</a>
+                    <a class="dropdown-item" href="ShowMyEvents.php"><i class="fas fa-pencil-alt"></i> Mes Évènements crées</a>
+                    <a class="dropdown-item" href="EventInscri.php"><i class="fas fa-check-circle"></i> Mes Évènements inscrits</a>
+                    <a class="dropdown-item" href="ShowAllEvents.php"><i class="fas fa-calendar-alt"></i> Autres Évènements</a>
+                </div>
 
-    </div>
-    <div class="dropdown">
-        <a class="nav-link" href="#"><i class="fas fa-cog"></i> Paramètres</a>
-        <div class="dropdown-content">
-        <a class="dropdown-item" href="../../Controllers/personneController.php?action=logout"><i class="fas fa-sign-out-alt"></i> Se déconnecter</a>
-
-            <a class="dropdown-item" href="{{ path('forgot-pass') }}"><i class="fas fa-key"></i> Mot de passe oublié</a>
-            <a class="dropdown-item" href="{{ path('app_profil') }}"><i class="fas fa-user"></i> Voir mon profil</a>
         </div>
-    </div>
-    </div>
+        <div class="dropdown">
+            <a class="nav-link" href="#"><i class="fas fa-cog"></i> Paramètres</a>
+            <div class="dropdown-content">
+            <a class="dropdown-item" href="../../Controllers/personneController.php?action=logout"><i class="fas fa-sign-out-alt"></i> Se déconnecter</a>
+
+                <a class="dropdown-item" href="\WEBI\Views\user\reset-password.php"><i class="fas fa-key"></i> Mot de passe oublié</a>
+                <a class="dropdown-item" href="profil.php"><i class="fas fa-user"></i> Voir mon profil</a>
+            </div>
+        </div>
+        <div class="dropdown">
+            <div class="user-info">
+                <i class="fas fa-circle text-success"></i> <!-- Point vert -->
+                <span style="color: white; font-size: 14px;"><?php echo $username; ?></span>
+            </div>
+        </div>   
+    </div>   
 </nav>
 
 <!-- JavaScript to hide/show navbar on scroll -->

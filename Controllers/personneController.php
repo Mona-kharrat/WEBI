@@ -2,6 +2,7 @@
 require_once '../vendor/autoload.php'; 
 require_once '../Models/personneModel.php';
 use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 class AuthController {
     private $personneModel;
 
@@ -9,12 +10,19 @@ class AuthController {
     public function __construct() {
         $this->personneModel = new personneModel();
     }
-
+    private function checkSession()
+    {
+        if (!isset($_SESSION['user']['id'])) {
+            header("Location: ../Views/authentification/Authentification.php");
+            exit();
+        }
+    }
     public function register() {
         // Initialisation du tableau des erreurs
         $errors = [];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+           
             // Récupération des données du formulaire
             $username = trim($_POST['username']);
             $email = trim($_POST['email']);
@@ -42,6 +50,10 @@ class AuthController {
                         'id' => $this->personneModel->getUserIdByEmail($email) // Assurez-vous d'avoir une méthode pour récupérer l'ID
                     ];
 
+                    
+
+                    $this->sendConfirmationEmail($email,$username);
+
                     // Redirige vers la page de succès
                     header("Location: ../Views/user/ShowMyEvents.php");
                     exit();
@@ -63,7 +75,19 @@ class AuthController {
         header("Location: ../Views/authentification/inscription.php");
         exit();
     }
+    public function showAllusers()
+    {
+        $this->checkSession();
 
+        $personneModel = new personneModel();
+        $users = $personneModel->getUsers();
+
+        if ($users) {
+            require_once '../Views/admin/gestion_user.php';
+        } else {
+            echo "Aucun user trouvé.";
+        }
+    }
     private function sendConfirmationEmail($email, $username) {
         echo "<script>console.log('Test : Envoi de l\'email échoué');</script>";
 
@@ -74,18 +98,24 @@ class AuthController {
             $mail->Host = 'smtp.gmail.com';  // Hôte SMTP de Gmail
             $mail->SMTPAuth = true;  // Activer l'authentification SMTP
             $mail->Username = 'mariembouaziz.mb@gmail.com';  // Votre adresse Gmail
-            $mail->Password = 'Mar40720Ad';  // Votre mot de passe Gmail ou un mot de passe d'application
+            $mail->Password = 'zdpp fkhk awkc cvsu';  // Votre mot de passe Gmail ou un mot de passe d'application
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;  // Utiliser STARTTLS pour sécuriser la connexion
             $mail->Port = 587;  // Le port SMTP de Gmail pour STARTTLS
     
             // Expéditeur et destinataire
-            $mail->setFrom('mariembouaziz.mb@gmail.com', 'Mon Application');
-            $mail->addAddress($email, $username);  // Adresse email du destinataire
+            $mail->setFrom('no-reply@example.com', 'WEBI');
+            $mail->addAddress($email, $username);  
     
             // Contenu de l'email
             $mail->isHTML(true);  // Envoi d'email au format HTML
-            $mail->Subject = 'Inscription à l\'événement';
-            $mail->Body = 'Bonjour, vous êtes inscrit à un événement.';
+            $mail->Subject = 'Bienvenue sur WEBI - Votre compte a été créé avec succès';
+            $mail->Body = 'Bonjour ' . $username . ',<br><br>
+            Nous sommes ravis de vous informer que votre compte a été créé avec succès sur <strong>WEBI</strong>. Vous pouvez désormais accéder à votre espace personnel et profiter de tous nos services.<br><br>
+            Si vous avez des questions ou besoin d\'assistance, n\'hésitez pas à nous contacter à tout moment.<br><br>
+            Merci de faire partie de notre communauté.<br><br>
+            Cordialement,<br>
+            L\'équipe WEBI';
+            
     
             // Envoi de l'email
             if($mail->send()) {
@@ -101,7 +131,42 @@ class AuthController {
 
         }
     }
+    public function update()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user_id'])) {
+            $role = $_POST['role'];
+            $userId = $_POST['user_id'];
     
+            // Validation du formulaire
+            $user_errors = $this->validateForm($role);
+    
+            // Si pas d'erreur, mise à jour de l'utilisateur
+            if (empty($user_errors)) {
+                $personneModel = new personneModel();
+                $personneModel->updateUser($role, $userId);
+    
+                $_SESSION['message'] = "Le rôle de l'utilisateur a été modifié avec succès.";
+                header('Location: ../Views/admin/gestion_user.php');
+                exit();
+            } else {
+                $_SESSION['user_errors'] = $user_errors;
+                $_SESSION['formData'] = compact('role');
+                header('Location: ../Views/admin/gestion_user.php');
+                exit();
+            }
+        }
+    }
+    
+    private function validateForm($role)
+    {
+        $user_errors = [];
+    
+        if (empty($role)) {
+            $user_errors[] = "Le rôle est requis.";
+        }
+    
+        return $user_errors;
+    }
     
     public function login() {
         // Initialisation du tableau des erreurs
@@ -142,7 +207,7 @@ class AuthController {
                         exit();
                     } else {
                         // Redirection vers la page des événements de l'utilisateur
-                        header("Location: ../Views/user/ShowMyEvents.php");
+                        header("Location: ../Views/user/ShowAllEvents.php");
                         exit();
                     }
                 } else {
@@ -158,14 +223,143 @@ class AuthController {
         header("Location: ../Views/authentification/Authentification.php");
         exit();
     }
+    /////// view profil /////////////
+    public function viewProfile() {
+        // Récupérer les informations de l'utilisateur connecté
+        if (!isset($_SESSION['user']['id'])) {
+            header('Location: login.php'); // Rediriger si non connecté
+            exit;
+        }
+        $userId = $_SESSION['user']['id'];
+        $user = $this->model->getUserById($userId);
+
+        // Calculer les statistiques
+        $nbEventsCreated = $this->model->getEventCountByUser($userId);
+        $nbEventsRegistered = $this->model->getEventRegistrationsCount($userId);
+
+        // Inclure la vue
+        include 'views/user/profil.php';
+    }
+    public function updateProfile() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'], $_POST['email'])) {
+            session_start();
+    
+            $userId = $_SESSION['user']['id'];
+            $username = trim($_POST['username']);
+            $email = trim($_POST['email']);
+            $personneModel = new personneModel();
+            
+            // Vérifications
+            if ($this->personneModel->userExists($email) && $this->personneModel->getUserIdByEmail($email) !== $userId) {
+                $_SESSION['errors'] = "Cet email est déjà utilisé.";
+                header("Location: ../Views/user/profil.php?error=email_taken");
+                exit();
+            }
+    
+            // Mise à jour du profil
+            $this->personneModel->updateUserProfile($userId, $username, $email);
+    
+            // Redirection avec confirmation
+            header("Location: ../Views/user/profil.php?success=1");
+            exit();
+        }
+    }
+    public function blockUser($userId) {
+        // Appeler la méthode de blocage du modèle
+        if ($this->personneModel->blockUser($userId)) {
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false]);
+        }
+        // Redirection vers la page d'administration ou vers la liste des utilisateurs
+        header("Location: ../Views/admin/gestion_user.php");
+        exit();
+    }
+
+    // Débloquer un utilisateur
+    public function unblockUser($userId) {
+        // Appeler la méthode de déblocage du modèle
+        if ($this->personneModel->unblockUser($userId)) {
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false]);
+        }
+        // Redirection vers la page d'administration ou vers la liste des utilisateurs
+        header("Location: ../Views/admin/gestion_user.php");
+        exit();
+    }
+    public function deleteUser($userId) {
+        // Appeler la méthode de déblocage du modèle
+        if ($this->personneModel->deleteUser($userId)) {
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false]);
+        }
+        // Redirection vers la page d'administration ou vers la liste des utilisateurs
+        header("Location: ../Views/admin/gestion_user.php");
+        exit();
+    }
+    function logout() {
+        // Détaille la session
+        $_SESSION = array();
+    
+        // Si la session existe, la détruire
+        if (session_id()) {
+            session_destroy();
+        }
+    
+        // Redirige vers la page de connexion ou page d'accueil
+        header("Location: ../index.php"); // Ou la page de ton choix
+        exit();
+    }
+    
+    
 }
 
-// Déterminez l'action à effectuer
+
+if (isset($_GET['action'])){
+ // Définir une action par défaut
 $authController = new AuthController();
-if (isset($_GET['action']) && $_GET['action'] === 'login') {
-    $authController->login();
-} else {
-    $authController->register();
+switch ($_GET['action']) {
+    case 'login':
+        $authController->login();
+        break;
+    case 'register': // Action par défaut si aucune correspondance trouvée
+        $authController->register();
+        break;
+    case 'update';
+    $authController->update();
+    break;
+    case 'updateProfile';
+    $authController->updateProfile();
+    break;
+    case 'viewProfile';
+    $authController->viewProfile();
+    break;
+    case 'logout':
+        $authController->logout();
+        break;
+    case 'blockUser':
+        $userId = (int)$_GET['id'];
+        $authController->blockUser($userId);
+        break;
+    case 'unblockUser':
+        $userId = (int)$_GET['id'];
+        $authController->unblockUser($userId);
+        break;
+        case 'deleteUser':
+        $userId = (int)$_GET['id'];
+        $authController->deleteUser($userId);
+        break;
+        case 'showAllusers':
+        $authController->showAllusers();
+        break;
+        case 'update':
+        $authController->update();
+        break;
+    default:
+    echo "Action non valide.";
+    break;
 }
-
+}
 ?>

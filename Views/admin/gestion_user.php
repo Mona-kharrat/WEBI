@@ -102,15 +102,31 @@ $totalPages = ceil($totalUsers / $limit);
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <form method="POST" action="../../Controllers/personneController.php?action=update">
-                                            <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($user['id']); ?>">
-                                            <div class="mb-3">
-                                                <label for="role<?php echo htmlspecialchars($user['id']); ?>" class="form-label">Rôle</label>
-                                                <input type="text" class="form-control" id="role<?php echo htmlspecialchars($user['id']); ?>" name="role" value="<?php echo htmlspecialchars($user['role']); ?>" required>
-                                            </div>
-                                            <button type="submit" class="btn btn-success">Enregistrer les modifications</button>
-                                        </form>
-                                    </div>
+    <form method="POST" action="../../Controllers/personneController.php?action=update">
+        <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($user['id']); ?>">
+        
+        <div class="mb-3">
+            <label for="role<?php echo htmlspecialchars($user['id']); ?>" class="form-label">Rôle</label>
+            
+            <!-- Boutons radio pour User et Admin -->
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="role" id="role_user<?php echo htmlspecialchars($user['id']); ?>" value="user" <?php echo ($user['role'] == 'user') ? 'checked' : ''; ?> required>
+                <label class="form-check-label" for="role_user<?php echo htmlspecialchars($user['id']); ?>">
+                    User
+                </label>
+            </div>
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="role" id="role_admin<?php echo htmlspecialchars($user['id']); ?>" value="admin" <?php echo ($user['role'] == 'admin') ? 'checked' : ''; ?> required>
+                <label class="form-check-label" for="role_admin<?php echo htmlspecialchars($user['id']); ?>">
+                    Admin
+                </label>
+            </div>
+        </div>
+        
+        <button type="submit" class="btn btn-success">Enregistrer les modifications</button>
+    </form>
+</div>
                                 </div>
                             </div>
                         </div>
@@ -153,14 +169,63 @@ $totalPages = ceil($totalUsers / $limit);
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    document.querySelectorAll('.delete-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            const userId = this.getAttribute('data-id');
-            if (confirm('Voulez-vous supprimer cet user ?')) {
-                window.location.href = `../../Controllers/userController.php?action=deleteAdmin&id=${userId}`;
-            }
+    document.addEventListener('DOMContentLoaded', function () {
+        // Gestion du bouton de blocage (validate-btn)
+        document.querySelectorAll('.validate-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const userId = this.getAttribute('data-id');
+                if (confirm('Voulez-vous bloquer cet utilisateur ?')) {
+                    fetch(`../../Controllers/personneController.php?action=blockUser&id=${userId}`, {
+                        method: 'GET'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Utilisateur bloqué avec succès.');
+                            location.reload();  // Recharger la page pour voir les modifications
+                        } else {
+                            alert('Erreur lors du blocage de l\'utilisateur.');
+                        }
+                    })
+                    
+                }
+            });
+        });
+
+        // Gestion du bouton de déblocage (moderate-btn)
+        document.querySelectorAll('.moderate-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const userId = this.getAttribute('data-id');
+                if (confirm('Voulez-vous débloquer cet utilisateur ?')) {
+                    fetch(`../../Controllers/personneController.php?action=unblockUser&id=${userId}`, {
+                        method: 'GET'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Utilisateur débloqué avec succès.');
+                            location.reload();  
+                        } else {
+                            alert('Erreur lors du déblocage de l\'utilisateur.');
+                        }
+                    })
+                    
+                }
+            });
+        });
+
+        // Gestion du bouton de suppression (delete-btn)
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const userId = this.getAttribute('data-id');
+                if (confirm('Voulez-vous supprimer cet utilisateur ?')) {
+                    window.location.href = `../../Controllers/personneController.php?action=deleteUser&id=${userId}`;
+                    location.reload();}
+            });
         });
     });
+
+
 </script>
 
 </body>

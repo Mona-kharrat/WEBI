@@ -35,7 +35,7 @@ usort($events, function($a, $b) {
             text-align: center;
             position: relative;
             font-weight: bold;
-            margin-top: 60px;
+            margin-top: 50px;
         }
 
         .card {
@@ -93,19 +93,84 @@ usort($events, function($a, $b) {
         .d-flex {
             gap: 20px;
         }
+        .card {
+        width: 17rem;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+        
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-img-top {
+        height: 100px; /* Réduction de la hauteur */
+        object-fit: cover;
+    }
+
+    .card-body {
+        padding: 8px; /* Réduction du padding */
+    }
+
+    .card-title {
+        font-size: 1rem; /* Réduction de la taille de la police */
+        font-weight: bold;
+        color: #024d70;
+    }
+
+    .card-text {
+        color: #555;
+        font-size:0.75rem; /* Réduction de la taille de la description */
+    }
+     /* Styles pour la pagination */
+     .pagination {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .page-item {
+            list-style-type: none;
+            margin: 0 5px;
+        }
+
+        .page-link {
+            text-decoration: none;
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+            color: #333;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .page-link:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .page-link.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
     </style>
 </head>
 <body>
     <div id="navbar-container"></div>
 
     <header>
-        <h1>Mes Événements Inscrits</h1>
+        <h1>Mes événements Inscrits</h1>
     </header>
     <main class="container mt-5">
         <?php if (!empty($events)) : ?>
             <div class="d-flex flex-wrap justify-content-center">
                 <?php foreach ($events as $event) : ?>
-                    <div class="col-md-4 mb-4">
+                    <div class="col-md-3 mb-3">
                         <div class="card">
                         <img src="../<?php echo htmlspecialchars($event['image']); ?>" class="card-img-top img-fluid" alt="Événement">
                             <div class="card-body">
@@ -123,7 +188,16 @@ usort($events, function($a, $b) {
             <p class="text-center">Aucun événement trouvé.</p>
         <?php endif; ?>
     </main>
-
+    <nav>
+        <ul class="pagination">
+            <li class="page-item">
+                <a class="page-link" href="#">1</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">2</a>
+            </li>
+        </ul>
+    </nav>
     <script>
         fetch('navbar_user.php')
             .then(response => response.text())
