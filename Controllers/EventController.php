@@ -259,7 +259,7 @@ private function sendEventRegistrationEmail($userId, $eventId) {
             $_SESSION['error'] = "ID d'événement manquant.";
         }
     
-        header("Location: ../Views/admin/gestion_event.php");
+        header("Location: ../Views/admin/dashboard.php");
         exit();
     }
     

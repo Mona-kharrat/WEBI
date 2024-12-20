@@ -140,10 +140,8 @@
     <p>Une question ou besoin d'aide ? Envoyez-nous un message !</p>
   </div>
   <div class="row">
-    <div class="col-md-6">
-      <img src="images/contact_us.jpg" class="img-fluid" alt="Contactez-nous">
-    </div>
-    <div class="col-md-6">
+    
+    <div class="col-md-10">
       <form>
         <div class="form-group">
           <label for="name">Nom</label>

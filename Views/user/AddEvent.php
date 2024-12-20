@@ -9,8 +9,7 @@ if (!isset($_SESSION['user']['id'])) {
 
 // Récupérer les erreurs de session et les données du formulaire
 $event_errors = $_SESSION['event_errors'] ?? [];
-$formData = $_SESSION['formData'] ?? [];
-echo "ID utilisateur connecté : " . $_SESSION['user']['id'];
+$formData = $_SESSION['formData'] ?? [];;
 
 // Nettoyer les erreurs après leur affichage
 unset($_SESSION['event_errors']);

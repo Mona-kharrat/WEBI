@@ -21,7 +21,7 @@ class EventModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
-    public function deleteEvent($eventId)
+    public function deleteEventById($eventId)
     {
         try {
             $query = "DELETE FROM events WHERE id = :id";

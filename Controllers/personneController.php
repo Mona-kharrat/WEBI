@@ -55,7 +55,7 @@ class AuthController {
                     $this->sendConfirmationEmail($email,$username);
 
                     // Redirige vers la page de succès
-                    header("Location: ../Views/user/ShowMyEvents.php");
+                    header("Location: ../Views/user/ShowAllEvents.php");
                     exit();
                 } else {
                     $errors['general'] = "Une erreur s'est produite lors de la création du compte.";
@@ -83,7 +83,7 @@ class AuthController {
         $users = $personneModel->getUsers();
 
         if ($users) {
-            require_once '../Views/admin/gestion_user.php';
+            require_once '../Views/admin/dashboard.php';
         } else {
             echo "Aucun user trouvé.";
         }
@@ -272,7 +272,7 @@ class AuthController {
             echo json_encode(['success' => false]);
         }
         // Redirection vers la page d'administration ou vers la liste des utilisateurs
-        header("Location: ../Views/admin/gestion_user.php");
+        header("Location: ../Views/admin/dashboard.php");
         exit();
     }
 
@@ -285,7 +285,7 @@ class AuthController {
             echo json_encode(['success' => false]);
         }
         // Redirection vers la page d'administration ou vers la liste des utilisateurs
-        header("Location: ../Views/admin/gestion_user.php");
+        header("Location: ../Views/admin/dashboard.php");
         exit();
     }
     public function deleteUser($userId) {
@@ -296,7 +296,7 @@ class AuthController {
             echo json_encode(['success' => false]);
         }
         // Redirection vers la page d'administration ou vers la liste des utilisateurs
-        header("Location: ../Views/admin/gestion_user.php");
+        header("Location: ../Views/admin/dashboard.php");
         exit();
     }
     function logout() {
